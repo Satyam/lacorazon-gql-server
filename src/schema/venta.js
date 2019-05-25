@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    ventas: [Venta!]
+    ventas(offset: Int, limit: Int, last: Int): [Venta!]
     venta(id: ID!): Venta
   }
 

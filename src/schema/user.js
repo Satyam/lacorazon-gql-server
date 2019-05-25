@@ -10,6 +10,6 @@ export default gql`
     id: ID!
     nombre: String!
     email: String
-    ventas: [Venta!]
+    ventas(offset: Int, limit: Int, last: Int): [Venta!]
   }
 `;
