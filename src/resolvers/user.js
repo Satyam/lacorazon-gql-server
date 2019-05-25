@@ -1,4 +1,4 @@
-import { compareFecha } from './utils';
+import { compareFecha, slice } from './utils';
 
 export default {
   Query: {
@@ -6,15 +6,12 @@ export default {
     users: (parent, args, { data }) => Object.values(data.users),
   },
   User: {
-    ventas: (
-      parent,
-      { offset = 0, limit = Number.MAX_SAFE_INTEGER, last },
-      { data }
-    ) => {
-      const vs = Object.values(data.ventas)
-        .filter(venta => venta.vendedor === parent.id)
-        .sort(compareFecha);
-      return last ? vs.slice(-last) : vs.slice(offset, offset + limit);
-    },
+    ventas: (parent, args, { data }) =>
+      slice(
+        Object.values(data.ventas)
+          .filter(venta => venta.vendedor === parent.id)
+          .sort(compareFecha),
+        args
+      ),
   },
 };
