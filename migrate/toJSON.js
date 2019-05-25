@@ -13,6 +13,7 @@ writeJson(
         [id]: {
           ...v,
           id,
+          vendedor: v.vendedor.toLowerCase(),
         },
       };
     }, {}),
