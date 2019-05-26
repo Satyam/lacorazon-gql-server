@@ -62,3 +62,4 @@ typings/
 
 # this app
 data.json
+db.sqlite
