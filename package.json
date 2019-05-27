@@ -6,8 +6,11 @@
   "scripts": {
     "test": "jest",
     "start": "nodemon --exec babel-node src/index.js",
+    "start:json": "DATA=JSON npm start",
+    "start:sqlite": "DATA=SQLite npm start",
     "migrate2Json": "babel-node migrate/toJSON.js",
-    "migrate2Sqlite": "babel-node migrate/toSQLite.js"
+    "migrate2Sqlite": "babel-node migrate/toSQLite.js",
+    "clean": "npm run migrate2Json && npm run migrate2Sqlite"
   },
   "repository": {
     "type": "git",

@@ -5,21 +5,24 @@ export default {
     ventas: (parent, { offset = 0, limit, last }, { db }) => {
       if (last) {
         return db
-          .all('select * from Ventas order by fecha desc limit $last', {
-            $last: last,
-          })
+          .all(
+            'select * from Ventas order by fecha desc, id desc limit $last',
+            {
+              $last: last,
+            }
+          )
           .then(data => data.reverse());
       }
       if (limit) {
         return db.all(
-          'select * from Ventas order by fecha limit $limit offset $offset',
+          'select * from Ventas order by fecha, id limit $limit offset $offset',
           {
             $limit: limit,
             $offset: offset,
           }
         );
       }
-      return db.all('select * from Ventas  order by fecha');
+      return db.all('select * from Ventas  order by fecha, id');
     },
   },
   Venta: {

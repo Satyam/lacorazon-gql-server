@@ -18,7 +18,7 @@ export default {
       if (last) {
         return db
           .all(
-            'select * from Ventas where vendedor = $vendedor order by fecha desc limit $last',
+            'select * from Ventas where vendedor = $vendedor order by fecha desc, id desc limit $last',
             {
               $vendedor: parent.id,
               $last: last,
@@ -28,7 +28,7 @@ export default {
       }
       if (limit) {
         return db.all(
-          'select * from Ventas where vendedor = $vendedor order by fecha limit $last offset $offset',
+          'select * from Ventas where vendedor = $vendedor order by fecha, id limit $limit offset $offset',
           {
             $vendedor: parent.id,
             $limit: limit,
@@ -37,7 +37,7 @@ export default {
         );
       }
       return db.all(
-        'select * from Ventas where vendedor = $vendedor order by fecha',
+        'select * from Ventas where vendedor = $vendedor order by fecha, id',
         {
           $vendedor: parent.id,
         }

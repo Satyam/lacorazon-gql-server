@@ -11,6 +11,7 @@ Promise.resolve()
   .then(() => {
     switch (process.env.DATA) {
       case 'SQLite': {
+        console.log('Start with SQLite');
         const sqlite = require('sqlite');
         const resolvers = require('./resolvers/sqlite').default;
         return sqlite.open(process.env.SQLITE_FILE).then(db =>
@@ -29,6 +30,7 @@ Promise.resolve()
       }
 
       case 'JSON': {
+        console.log('Start with JSON');
         const resolvers = require('./resolvers/memory').default;
         const data = require('./data.json');
         return new ApolloServer({
@@ -41,6 +43,7 @@ Promise.resolve()
         });
       }
       default:
+        console.error('No data source given');
         return null;
     }
   })
