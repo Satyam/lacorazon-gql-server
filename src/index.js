@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { start, stop } from './server';
 
 async function startup() {

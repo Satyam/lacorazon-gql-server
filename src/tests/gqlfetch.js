@@ -1,8 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import axios from 'axios';
-import 'dotenv/config';
 
-const API_URL = `http://localhost:${process.env.SERVER_PORT || 8000}/graphql`;
+const API_URL = `${process.env.HOST}:${process.env.SERVER_PORT || 8000}${
+  process.env.GRAPHQL
+}`;
 
 export default function gqlFetch(query) {
   return variables =>

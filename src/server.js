@@ -1,6 +1,4 @@
 /* eslint-disable global-require */
-import 'dotenv/config';
-
 import express from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
@@ -14,7 +12,7 @@ export function stop() {
 export function start() {
   return Promise.resolve()
     .then(() => {
-      switch (process.env.DATA) {
+      switch (process.env.DATA_SOURCE) {
         case 'SQLite': {
           console.log('Start with SQLite');
           const sqlite = require('sqlite');
@@ -37,15 +35,18 @@ export function start() {
         case 'JSON': {
           console.log('Start with JSON');
           const resolvers = require('./resolvers/memory').default;
-          const data = require('./data.json');
-          return new ApolloServer({
-            typeDefs: schema,
-            resolvers,
-            context: {
-              data,
-              currentUser: data.users.ro,
-            },
-          });
+          const { readJson } = require('fs-extra');
+          return readJson(process.env.JSON_FILE).then(
+            data =>
+              new ApolloServer({
+                typeDefs: schema,
+                resolvers,
+                context: {
+                  data,
+                  currentUser: data.users.ro,
+                },
+              })
+          );
         }
         default:
           console.error('No data source given');
@@ -57,14 +58,16 @@ export function start() {
 
       app.use(cors());
 
-      server.applyMiddleware({ app, path: '/graphql' });
+      server.applyMiddleware({ app, path: process.env.GRAPHQL });
 
       app.get('/kill', stop);
 
       const PORT = process.env.SERVER_PORT || 8000;
       return new Promise(resolve => {
         app.listen({ port: PORT }, () => {
-          console.log(`Apollo Server on http://localhost:${PORT}/graphql`);
+          console.log(
+            `Apollo Server on ${process.env.HOST}:${PORT}${process.env.GRAPHQL}`
+          );
           resolve();
         });
       });
