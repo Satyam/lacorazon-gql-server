@@ -11,8 +11,8 @@ export default {
       slice(
         Object.values(data.ventas)
           .filter(venta => venta.vendedor === parent.id)
-          .sort(compareFecha)
-          .sort(compareStringField('id')),
+          .sort(compareStringField('id'))
+          .sort(compareFecha),
         args
       ),
   },

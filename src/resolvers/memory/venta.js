@@ -6,8 +6,8 @@ export default {
     ventas: (parent, args, { data }) =>
       slice(
         Object.values(data.ventas)
-          .sort(compareFecha)
-          .sort(compareStringField('id')),
+          .sort(compareStringField('id'))
+          .sort(compareFecha),
         args
       ),
   },
