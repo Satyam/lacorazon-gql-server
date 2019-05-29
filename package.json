@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "test:json": "DATA_SOURCE=JSON npm t",
     "test:sqlite": "DATA_SOURCE=SQLite npm t",
     "start": "nodemon --exec babel-node src/index.js",
     "server": "babel-node src/index.js",
+    "server:debug": "babel-node --inspect --debug-brk src/index.js",
     "start:json": "DATA_SOURCE=JSON npm start",
     "start:sqlite": "DATA_SOURCE=SQLite npm start",
     "migrate2Json": "babel-node migrate/toJSON.js",
@@ -49,7 +51,7 @@
     "cuid": "^2.1.6",
     "dotenv": "^8.0.0",
     "express": "^4.17.0",
-    "fs-extra": "^8.0.1",
+    "fs-extra": "^7.0.1",
     "graphql": "^14.3.1",
     "sqlite": "^3.0.3"
   },
