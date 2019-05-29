@@ -10,41 +10,41 @@ describe('user', () => {
       }
     }
   `);
-    test('user ro', () =>
-      query({ id: 'ro' }).then(result => {
+    test('user u1', () =>
+      query({ id: 'u1' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                    Object {
-                      "data": Object {
-                        "user": Object {
-                          "email": "RoxanaCabut@gmail.com",
-                          "nombre": "Roxana Cabut",
-                        },
-                      },
-                    }
-                `);
+                              Object {
+                                "data": Object {
+                                  "user": Object {
+                                    "email": "usuario1@correo.com",
+                                    "nombre": "Usuario 1",
+                                  },
+                                },
+                              }
+                        `);
       }));
-    test('user ra', () =>
-      query({ id: 'ra' }).then(result => {
+    test('user u2', () =>
+      query({ id: 'u2' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                    Object {
-                      "data": Object {
-                        "user": Object {
-                          "email": "reyezuelo@gmail.com",
-                          "nombre": "Raed El Younsi",
-                        },
-                      },
-                    }
-                `);
+          Object {
+            "data": Object {
+              "user": Object {
+                "email": "usuario2@correo.com",
+                "nombre": "Usuario 2",
+              },
+            },
+          }
+        `);
       }));
     test('user xxxx', () =>
       query({ id: 'xxxx' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                    Object {
-                      "data": Object {
-                        "user": null,
-                      },
-                    }
-                `);
+                                                            Object {
+                                                              "data": Object {
+                                                                "user": null,
+                                                              },
+                                                            }
+                                                `);
       }));
   });
   describe('single user with ventas', () => {
@@ -60,120 +60,88 @@ describe('user', () => {
       }
     }
   `);
-    test('user ro, all ventas', () =>
-      query({ id: 'ro' }).then(result => {
+    test('user u1, all ventas', () =>
+      query({ id: 'u1' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                    Object {
-                      "data": Object {
-                        "user": Object {
-                          "email": "RoxanaCabut@gmail.com",
-                          "nombre": "Roxana Cabut",
-                          "ventas": Array [
-                            Object {
-                              "concepto": "Roxana desde 17/12/2017",
-                              "fecha": "2018-09-30T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Roxana desde 17/12/2017",
-                              "fecha": "2018-09-30T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Roxana desde 17/12/2017",
-                              "fecha": "2018-09-30T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Sol (Río Abirto masajes)",
-                              "fecha": "2018-10-03T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Roxy  para ella",
-                              "fecha": "2018-10-07T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Manoli",
-                              "fecha": "2018-10-19T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Laia (La Mano de Maya)",
-                              "fecha": "2018-10-21T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Coco",
-                              "fecha": "2018-10-21T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Machi (yoga compi)",
-                              "fecha": "2018-11-05T23:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Ángela España Borja (Murcia)",
-                              "fecha": "2018-11-13T23:00:00.000Z",
-                            },
-                          ],
-                        },
-                      },
-                    }
-                `);
+                              Object {
+                                "data": Object {
+                                  "user": Object {
+                                    "email": "usuario1@correo.com",
+                                    "nombre": "Usuario 1",
+                                    "ventas": Array [
+                                      Object {
+                                        "concepto": "1ra venta",
+                                        "fecha": "2018-02-03T23:00:00.000Z",
+                                      },
+                                      Object {
+                                        "concepto": "6ta venta",
+                                        "fecha": "2018-10-03T23:00:00.000Z",
+                                      },
+                                      Object {
+                                        "concepto": "7ma venta",
+                                        "fecha": "2018-10-04T23:00:00.000Z",
+                                      },
+                                      Object {
+                                        "concepto": "8va venta",
+                                        "fecha": "2018-11-03T23:00:00.000Z",
+                                      },
+                                    ],
+                                  },
+                                },
+                              }
+                        `);
       }));
-    test('user ro, last 3 ventas', () =>
-      query({ id: 'ro', last: 3 }).then(result => {
+    test('user u1, last 3 ventas', () =>
+      query({ id: 'u1', last: 3 }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                    Object {
-                      "data": Object {
-                        "user": Object {
-                          "email": "RoxanaCabut@gmail.com",
-                          "nombre": "Roxana Cabut",
-                          "ventas": Array [
-                            Object {
-                              "concepto": "Coco",
-                              "fecha": "2018-10-21T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Machi (yoga compi)",
-                              "fecha": "2018-11-05T23:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Ángela España Borja (Murcia)",
-                              "fecha": "2018-11-13T23:00:00.000Z",
-                            },
-                          ],
-                        },
-                      },
-                    }
-                `);
+                              Object {
+                                "data": Object {
+                                  "user": Object {
+                                    "email": "usuario1@correo.com",
+                                    "nombre": "Usuario 1",
+                                    "ventas": Array [
+                                      Object {
+                                        "concepto": "6ta venta",
+                                        "fecha": "2018-10-03T23:00:00.000Z",
+                                      },
+                                      Object {
+                                        "concepto": "7ma venta",
+                                        "fecha": "2018-10-04T23:00:00.000Z",
+                                      },
+                                      Object {
+                                        "concepto": "8va venta",
+                                        "fecha": "2018-11-03T23:00:00.000Z",
+                                      },
+                                    ],
+                                  },
+                                },
+                              }
+                        `);
         expect(result.data.data.user.ventas.length).toBe(3);
       }));
-    test('user ro, 4 items starting at 2', () =>
-      query({ id: 'ro', offset: 2, limit: 4 }).then(result => {
+    test('user u1, 2 items starting at 1', () =>
+      query({ id: 'u1', offset: 1, limit: 2 }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                    Object {
-                      "data": Object {
-                        "user": Object {
-                          "email": "RoxanaCabut@gmail.com",
-                          "nombre": "Roxana Cabut",
-                          "ventas": Array [
-                            Object {
-                              "concepto": "Roxana desde 17/12/2017",
-                              "fecha": "2018-09-30T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Sol (Río Abirto masajes)",
-                              "fecha": "2018-10-03T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Roxy  para ella",
-                              "fecha": "2018-10-07T22:00:00.000Z",
-                            },
-                            Object {
-                              "concepto": "Manoli",
-                              "fecha": "2018-10-19T22:00:00.000Z",
-                            },
-                          ],
-                        },
-                      },
-                    }
-                `);
-        expect(result.data.data.user.ventas.length).toBe(4);
+                              Object {
+                                "data": Object {
+                                  "user": Object {
+                                    "email": "usuario1@correo.com",
+                                    "nombre": "Usuario 1",
+                                    "ventas": Array [
+                                      Object {
+                                        "concepto": "6ta venta",
+                                        "fecha": "2018-10-03T23:00:00.000Z",
+                                      },
+                                      Object {
+                                        "concepto": "7ma venta",
+                                        "fecha": "2018-10-04T23:00:00.000Z",
+                                      },
+                                    ],
+                                  },
+                                },
+                              }
+                        `);
+        expect(result.data.data.user.ventas.length).toBe(2);
       }));
   });
   describe('all users', () => {
@@ -188,22 +156,22 @@ describe('user', () => {
       query({}).then(result => {
         expect(result.data.data.users.length).toBe(3);
         expect(result.data).toMatchInlineSnapshot(`
-          Object {
-            "data": Object {
-              "users": Array [
-                Object {
-                  "nombre": "Raed El Younsi",
-                },
-                Object {
-                  "nombre": "Roxana & Raed",
-                },
-                Object {
-                  "nombre": "Roxana Cabut",
-                },
-              ],
-            },
-          }
-        `);
+                    Object {
+                      "data": Object {
+                        "users": Array [
+                          Object {
+                            "nombre": "Usuario 1",
+                          },
+                          Object {
+                            "nombre": "Usuario 2",
+                          },
+                          Object {
+                            "nombre": "Usuario 3",
+                          },
+                        ],
+                      },
+                    }
+                `);
       }));
   });
 });

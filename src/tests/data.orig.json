@@ -43,6 +43,20 @@
       "fecha": "2018-10-03T23:00:00.000Z",
       "id": "6",
       "vendedor": "u1"
+    },
+    "7": {
+      "cantidad": "8",
+      "concepto": "7ma venta",
+      "fecha": "2018-10-04T23:00:00.000Z",
+      "id": "7",
+      "vendedor": "u1"
+    },
+    "8": {
+      "cantidad": "2",
+      "concepto": "8va venta",
+      "fecha": "2018-11-03T23:00:00.000Z",
+      "id": "8",
+      "vendedor": "u1"
     }
   },
   "consigna": {

@@ -16,7 +16,7 @@ describe('Ventas', () => {
     test('todas las ventas', () =>
       query().then(result => {
         const { ventas } = result.data.data;
-        expect(ventas.length).toBe(37);
+        expect(ventas.length).toBe(8);
         expect(
           ventas.reduce(
             (anterior, v) => (v.fecha >= anterior ? v.fecha : 'xxx'),
@@ -24,16 +24,76 @@ describe('Ventas', () => {
           )
         ).not.toBe('xxx');
       }));
-    test('ultimas 5 ventas', () =>
-      query({ last: 5 }).then(result => {
+    test('ultimas 3 ventas', () =>
+      query({ last: 3 }).then(result => {
         const { ventas } = result.data.data;
-        expect(ventas.length).toBe(5);
+        expect(ventas.length).toBe(3);
         expect(
           ventas.reduce(
             (anterior, v) => (v.fecha >= anterior ? v.fecha : 'xxx'),
             ''
           )
         ).not.toBe('xxx');
+        expect(ventas).toMatchInlineSnapshot(
+          '',
+          `
+          Array [
+            Object {
+              "concepto": "6ta venta",
+              "fecha": "2018-10-03T23:00:00.000Z",
+              "vendedor": Object {
+                "nombre": "Usuario 1",
+              },
+            },
+            Object {
+              "concepto": "7ma venta",
+              "fecha": "2018-10-04T23:00:00.000Z",
+              "vendedor": Object {
+                "nombre": "Usuario 1",
+              },
+            },
+            Object {
+              "concepto": "8va venta",
+              "fecha": "2018-11-03T23:00:00.000Z",
+              "vendedor": Object {
+                "nombre": "Usuario 1",
+              },
+            },
+          ]
+        `
+        );
+      }));
+    test('2 ventas pasando la tercera', () =>
+      query({ limit: 2, offset: 3 }).then(result => {
+        const { ventas } = result.data.data;
+        expect(ventas.length).toBe(2);
+        expect(
+          ventas.reduce(
+            (anterior, v) => (v.fecha >= anterior ? v.fecha : 'xxx'),
+            ''
+          )
+        ).not.toBe('xxx');
+        expect(ventas).toMatchInlineSnapshot(
+          '',
+          `
+          Array [
+            Object {
+              "concepto": "4ta venta",
+              "fecha": "2018-04-03T23:00:00.000Z",
+              "vendedor": Object {
+                "nombre": "Usuario 2",
+              },
+            },
+            Object {
+              "concepto": "5ta venta",
+              "fecha": "2018-09-03T23:00:00.000Z",
+              "vendedor": Object {
+                "nombre": "Usuario 3",
+              },
+            },
+          ]
+        `
+        );
       }));
   });
   describe('single Venta', () => {
@@ -64,10 +124,10 @@ describe('Ventas', () => {
           Object {
             "data": Object {
               "venta": Object {
-                "concepto": "Ángela España Borja (Murcia)",
-                "fecha": "2018-11-13T23:00:00.000Z",
+                "concepto": "8va venta",
+                "fecha": "2018-11-03T23:00:00.000Z",
                 "vendedor": Object {
-                  "nombre": "Roxana Cabut",
+                  "nombre": "Usuario 1",
                 },
               },
             },
