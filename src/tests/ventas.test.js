@@ -35,7 +35,6 @@ describe('Ventas', () => {
           )
         ).not.toBe('xxx');
         expect(ventas).toMatchInlineSnapshot(
-          '',
           `
           Array [
             Object {
@@ -74,7 +73,6 @@ describe('Ventas', () => {
           )
         ).not.toBe('xxx');
         expect(ventas).toMatchInlineSnapshot(
-          '',
           `
           Array [
             Object {
