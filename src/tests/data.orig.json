@@ -1,58 +1,57 @@
 {
   "ventas": {
     "1": {
-      "cantidad": "10",
+      "cantidad": 10,
       "concepto": "1ra venta",
       "fecha": "2018-02-03T23:00:00.000Z",
       "id": "1",
-      "precioUnitario": "10.0",
+      "precioUnitario": 10.0,
       "vendedor": "u1"
     },
     "2": {
-      "cantidad": "5",
+      "cantidad": 5,
       "concepto": "2da venta",
       "fecha": "2018-02-03T23:00:00.000Z",
       "id": "2",
       "vendedor": "u2"
     },
     "3": {
-      "cantidad": "2",
+      "cantidad": 2,
       "concepto": "3ra venta",
       "fecha": "2018-03-03T23:00:00.000Z",
       "id": "3",
       "vendedor": "u3"
     },
     "4": {
-      "cantidad": "1",
+      "cantidad": 1,
       "concepto": "4ta venta",
       "fecha": "2018-04-03T23:00:00.000Z",
       "id": "4",
-      "precioUnitario": "",
       "vendedor": "u2"
     },
     "5": {
-      "cantidad": "4",
+      "cantidad": 4,
       "concepto": "5ta venta",
       "fecha": "2018-09-03T23:00:00.000Z",
       "id": "5",
       "vendedor": "u3"
     },
     "6": {
-      "cantidad": "6",
+      "cantidad": 6,
       "concepto": "6ta venta",
       "fecha": "2018-10-03T23:00:00.000Z",
       "id": "6",
       "vendedor": "u1"
     },
     "7": {
-      "cantidad": "8",
+      "cantidad": 8,
       "concepto": "7ma venta",
       "fecha": "2018-10-04T23:00:00.000Z",
       "id": "7",
       "vendedor": "u1"
     },
     "8": {
-      "cantidad": "2",
+      "cantidad": 2,
       "concepto": "8va venta",
       "fecha": "2018-11-03T23:00:00.000Z",
       "id": "8",
@@ -62,7 +61,7 @@
   "consigna": {
     "1": {
       "distribuidor": "d2",
-      "entregados": "10",
+      "entregados": 10,
       "fecha": "2018-02-02T23:00:00.000Z",
       "id": "1",
       "vendedor": "u2"
@@ -72,56 +71,55 @@
       "fecha": "2018-02-03T23:00:00.000Z",
       "id": "2",
       "vendedor": "u2",
-      "vendidos": "3"
+      "vendidos": 3
     },
     "3": {
       "distribuidor": "d1",
-      "entregados": "8",
+      "entregados": 8,
       "fecha": "2018-03-03T23:00:00.000Z",
       "id": "3",
-      "porcentaje": "0.3",
+      "porcentaje": 0.3,
       "vendedor": "u1"
     },
     "4": {
       "distribuidor": "d1",
-      "entregados": "",
       "fecha": "2018-03-04T23:00:00.000Z",
       "id": "4",
       "vendedor": "u1",
-      "vendidos": "2"
+      "vendidos": 2
     },
     "5": {
       "distribuidor": "d4",
-      "entregados": "6",
+      "entregados": 6,
       "fecha": "2018-04-03T23:00:00.000Z",
       "id": "5",
-      "porcentaje": "0,3",
+      "porcentaje": 0.3,
       "vendedor": "u3"
     },
     "6": {
-      "devueltos": "1",
+      "devueltos": 1,
       "distribuidor": "d4",
       "fecha": "2018-04-05T23:00:00.000Z",
       "id": "6",
       "vendedor": "u3",
-      "vendidos": "2"
+      "vendidos": 2
     },
     "7": {
-      "cobrado": "16.8",
+      "cobrado": 16.8,
       "distribuidor": "d1",
       "fecha": "2018-05-03T23:00:00.000Z",
       "id": "7",
       "vendedor": "u1"
     },
     "8": {
-      "devueltos": "1",
+      "devueltos": 1,
       "distribuidor": "d1",
       "fecha": "2018-05-03T23:00:00.000Z",
       "id": "8",
       "vendedor": "u1"
     },
     "9": {
-      "entregados": "3",
+      "entregados": 3,
       "distribuidor": "d1",
       "fecha": "2018-05-03T23:00:00.000Z",
       "id": "9",
