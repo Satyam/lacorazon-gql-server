@@ -9,12 +9,13 @@ export default gql`
   type Distribuidor {
     id: ID!
     nombre: String!
-    entregados: Int
-    existencias: Int
     localidad: String
     contacto: String
     telefono: String
     email: String
     direccion: String
+    entregados: Int
+    existencias: Int
+    consigna(offset: Int, limit: Int, last: Int): [Consigna!]
   }
 `;

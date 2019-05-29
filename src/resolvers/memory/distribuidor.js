@@ -1,4 +1,4 @@
-import { compareStringField, slice } from './utils';
+import { compareStringField, compareFecha, slice } from './utils';
 
 export default {
   Query: {
@@ -7,6 +7,15 @@ export default {
     distribuidores: (parent, args, { data }) =>
       slice(
         Object.values(data.distribuidores).sort(compareStringField('nombre')),
+        args
+      ),
+  },
+  Distribuidor: {
+    consigna: (parent, args, { data }) =>
+      slice(
+        Object.values(data.consigna)
+          .filter(consigna => consigna.distribuidor === parent.id)
+          .sort(compareFecha),
         args
       ),
   },

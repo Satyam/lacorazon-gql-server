@@ -108,11 +108,24 @@
     },
     "7": {
       "cobrado": "16.8",
-      "distribuidor": "d4",
-      "entregados": "",
+      "distribuidor": "d1",
       "fecha": "2018-05-03T23:00:00.000Z",
       "id": "7",
-      "vendedor": "u3"
+      "vendedor": "u1"
+    },
+    "8": {
+      "devueltos": "1",
+      "distribuidor": "d1",
+      "fecha": "2018-05-03T23:00:00.000Z",
+      "id": "8",
+      "vendedor": "u1"
+    },
+    "9": {
+      "entregados": "3",
+      "distribuidor": "d1",
+      "fecha": "2018-05-03T23:00:00.000Z",
+      "id": "9",
+      "vendedor": "u1"
     }
   },
   "distribuidores": {
