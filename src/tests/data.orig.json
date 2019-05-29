@@ -1,0 +1,169 @@
+{
+  "ventas": {
+    "1": {
+      "cantidad": "10",
+      "concepto": "1ra venta",
+      "fecha": "2018-02-03T23:00:00.000Z",
+      "id": "1",
+      "precioUnitario": "10.0",
+      "vendedor": "u1"
+    },
+    "2": {
+      "cantidad": "5",
+      "concepto": "2da venta",
+      "fecha": "2018-02-03T23:00:00.000Z",
+      "id": "2",
+      "vendedor": "u2"
+    },
+    "3": {
+      "cantidad": "2",
+      "concepto": "3ra venta",
+      "fecha": "2018-03-03T23:00:00.000Z",
+      "id": "3",
+      "vendedor": "u3"
+    },
+    "4": {
+      "cantidad": "1",
+      "concepto": "4ta venta",
+      "fecha": "2018-04-03T23:00:00.000Z",
+      "id": "4",
+      "precioUnitario": "",
+      "vendedor": "u2"
+    },
+    "5": {
+      "cantidad": "4",
+      "concepto": "5ta venta",
+      "fecha": "2018-09-03T23:00:00.000Z",
+      "id": "5",
+      "vendedor": "u3"
+    },
+    "6": {
+      "cantidad": "6",
+      "concepto": "6ta venta",
+      "fecha": "2018-10-03T23:00:00.000Z",
+      "id": "6",
+      "vendedor": "u1"
+    }
+  },
+  "consigna": {
+    "1": {
+      "distribuidor": "d2",
+      "entregados": "10",
+      "fecha": "2018-02-02T23:00:00.000Z",
+      "id": "1",
+      "vendedor": "u2"
+    },
+    "2": {
+      "distribuidor": "d2",
+      "fecha": "2018-02-03T23:00:00.000Z",
+      "id": "2",
+      "vendedor": "u2",
+      "vendidos": "3"
+    },
+    "3": {
+      "distribuidor": "d1",
+      "entregados": "8",
+      "fecha": "2018-03-03T23:00:00.000Z",
+      "id": "3",
+      "porcentaje": "0.3",
+      "vendedor": "u1"
+    },
+    "4": {
+      "distribuidor": "d1",
+      "entregados": "",
+      "fecha": "2018-03-04T23:00:00.000Z",
+      "id": "4",
+      "vendedor": "u1",
+      "vendidos": "2"
+    },
+    "5": {
+      "distribuidor": "d4",
+      "entregados": "6",
+      "fecha": "2018-04-03T23:00:00.000Z",
+      "id": "5",
+      "porcentaje": "0,3",
+      "vendedor": "u3"
+    },
+    "6": {
+      "devueltos": "1",
+      "distribuidor": "d4",
+      "fecha": "2018-04-05T23:00:00.000Z",
+      "id": "6",
+      "vendedor": "u3",
+      "vendidos": "2"
+    },
+    "7": {
+      "cobrado": "16.8",
+      "distribuidor": "d4",
+      "entregados": "",
+      "fecha": "2018-05-03T23:00:00.000Z",
+      "id": "7",
+      "vendedor": "u3"
+    }
+  },
+  "distribuidores": {
+    "d1": {
+      "contacto": "Pepe",
+      "direccion": "algun lugar 1",
+      "email": "distr1@correo.com",
+      "id": "d1",
+      "localidad": "aqui",
+      "nombre": "Distrib 1",
+      "telefono": "123 456 789"
+    },
+    "d2": {
+      "contacto": "Paco",
+      "direccion": "alguno otro lugar 2",
+      "email": "distr2@correo.com",
+      "id": "d2",
+      "localidad": "alla",
+      "nombre": "Distrib 2",
+      "telefono": "987 654 321"
+    },
+    "d3": {
+      "contacto": "Fulano",
+      "direccion": "otro lugar 3",
+      "email": "distr3@correo.com",
+      "id": "d3",
+      "localidad": "más allá",
+      "nombre": "Distrib 3",
+      "telefono": "111 222 333"
+    },
+    "d4": {
+      "contacto": "Zutano",
+      "direccion": "otro más 4",
+      "email": "distr4@correo.com",
+      "id": "d3\t",
+      "localidad": "mucho más allá",
+      "nombre": "Distrib 4",
+      "telefono": "444 555 666"
+    },
+    "d5": {
+      "contacto": "Mengano",
+      "direccion": "más aún 5",
+      "email": "distr5@correo.com",
+      "id": "d4",
+      "localidad": "aún más lejos",
+      "nombre": "Distrib 5",
+      "telefono": "777 999 888"
+    }
+  },
+  "salidas": [],
+  "users": {
+    "u2": {
+      "email": "usuario2@correo.com",
+      "id": "u2",
+      "nombre": "Usuario 2"
+    },
+    "u3": {
+      "email": "usuario3@correo.com",
+      "id": "u3",
+      "nombre": "Usuario 3"
+    },
+    "u1": {
+      "email": "usuario1@correo.com",
+      "id": "u1",
+      "nombre": "Usuario 1"
+    }
+  }
+}
