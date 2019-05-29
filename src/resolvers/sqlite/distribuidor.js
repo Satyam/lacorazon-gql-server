@@ -43,5 +43,26 @@ export default {
         }
       );
     },
+    existencias: (parent, args, { db }) =>
+      db
+        .get(
+          `select 
+            total(entregados) - total(vendidos) - total(devueltos) as existencias 
+            from Consigna where distribuidor = $distribuidor`,
+          {
+            $distribuidor: parent.id,
+          }
+        )
+        .then(row => row.existencias),
+    entregados: (parent, args, { db }) =>
+      db
+        .get(
+          `select total(entregados) as entregados
+            from Consigna where distribuidor = $distribuidor`,
+          {
+            $distribuidor: parent.id,
+          }
+        )
+        .then(row => row.entregados),
   },
 };

@@ -18,5 +18,20 @@ export default {
           .sort(compareFecha),
         args
       ),
+    existencias: (parent, args, { data }) =>
+      Object.values(data.consigna).reduce(
+        (existencias, c) =>
+          existencias +
+          (c.distribuidor === parent.id
+            ? (c.entregados || 0) - (c.vendidos || 0) - (c.devueltos || 0)
+            : 0),
+        0
+      ),
+    entregados: (parent, args, { data }) =>
+      Object.values(data.consigna).reduce(
+        (entregados, c) =>
+          entregados + (c.distribuidor === parent.id ? c.entregados || 0 : 0),
+        0
+      ),
   },
 };
