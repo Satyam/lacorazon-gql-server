@@ -13,38 +13,38 @@ describe('distribuidor', () => {
     test('distribuidor d1', () =>
       query({ id: 'd1' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                              Object {
-                                "data": Object {
-                                  "distribuidor": Object {
-                                    "email": "distr1@correo.com",
-                                    "nombre": "Distrib 1",
-                                  },
-                                },
-                              }
-                        `);
+                                        Object {
+                                          "data": Object {
+                                            "distribuidor": Object {
+                                              "email": "distr1@correo.com",
+                                              "nombre": "Distrib 1",
+                                            },
+                                          },
+                                        }
+                                `);
       }));
     test('distribuidor d2', () =>
       query({ id: 'd2' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                              Object {
-                                "data": Object {
-                                  "distribuidor": Object {
-                                    "email": "distr2@correo.com",
-                                    "nombre": "Distrib 2",
-                                  },
-                                },
-                              }
-                        `);
+                                        Object {
+                                          "data": Object {
+                                            "distribuidor": Object {
+                                              "email": "distr2@correo.com",
+                                              "nombre": "Distrib 2",
+                                            },
+                                          },
+                                        }
+                                `);
       }));
     test('distribuidor xxxx', () =>
       query({ id: 'xxxx' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
-                              Object {
-                                "data": Object {
-                                  "distribuidor": null,
-                                },
-                              }
-                        `);
+                                        Object {
+                                          "data": Object {
+                                            "distribuidor": null,
+                                          },
+                                        }
+                                `);
       }));
   });
   describe('single distribuidor with stock', () => {
@@ -57,7 +57,9 @@ describe('distribuidor', () => {
         existencias
         consigna(last:$last, offset: $offset, limit: $limit ) {
           fecha
-          vendedor
+          vendedor {
+            nombre
+          }
         }
       }
     }
@@ -71,23 +73,33 @@ describe('distribuidor', () => {
                 "consigna": Array [
                   Object {
                     "fecha": "2018-03-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-03-04T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                 ],
                 "email": "distr1@correo.com",
@@ -108,15 +120,21 @@ describe('distribuidor', () => {
                 "consigna": Array [
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                 ],
                 "email": "distr1@correo.com",
@@ -138,11 +156,15 @@ describe('distribuidor', () => {
                 "consigna": Array [
                   Object {
                     "fecha": "2018-03-04T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                   Object {
                     "fecha": "2018-05-03T23:00:00.000Z",
-                    "vendedor": "u1",
+                    "vendedor": Object {
+                      "nombre": "Usuario 1",
+                    },
                   },
                 ],
                 "email": "distr1@correo.com",
@@ -189,13 +211,13 @@ describe('distribuidor', () => {
                   "nombre": "Distrib 3",
                 },
                 Object {
-                  "entregados": 0,
-                  "existencias": 0,
+                  "entregados": 6,
+                  "existencias": 3,
                   "nombre": "Distrib 4",
                 },
                 Object {
-                  "entregados": 6,
-                  "existencias": 3,
+                  "entregados": 0,
+                  "existencias": 0,
                   "nombre": "Distrib 5",
                 },
               ],
@@ -207,23 +229,23 @@ describe('distribuidor', () => {
       query({ limit: 2, offset: 1 }).then(result => {
         expect(result.data.data.distribuidores.length).toBe(2);
         expect(result.data).toMatchInlineSnapshot(`
-          Object {
-            "data": Object {
-              "distribuidores": Array [
-                Object {
-                  "entregados": 10,
-                  "existencias": 7,
-                  "nombre": "Distrib 2",
-                },
-                Object {
-                  "entregados": 0,
-                  "existencias": 0,
-                  "nombre": "Distrib 3",
-                },
-              ],
-            },
-          }
-        `);
+                    Object {
+                      "data": Object {
+                        "distribuidores": Array [
+                          Object {
+                            "entregados": 10,
+                            "existencias": 7,
+                            "nombre": "Distrib 2",
+                          },
+                          Object {
+                            "entregados": 0,
+                            "existencias": 0,
+                            "nombre": "Distrib 3",
+                          },
+                        ],
+                      },
+                    }
+                `);
       }));
   });
 });

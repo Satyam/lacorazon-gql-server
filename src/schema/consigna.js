@@ -9,8 +9,8 @@ export default gql`
   type Consigna {
     id: ID!
     fecha: String
-    distribuidor: String
-    vendedor: String
+    distribuidor: Distribuidor
+    vendedor: User
     entregados: Int
     porcentaje: Float
     vendidos: Int
