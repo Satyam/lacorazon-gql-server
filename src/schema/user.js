@@ -6,6 +6,12 @@ export default gql`
     user(id: ID!): User
   }
 
+  extend type Mutation {
+    createUser(nombre: String!, email: String): User!
+    updateUser(id: ID!, nombre: String, email: String): User!
+    deleteUser(id: ID!): User!
+  }
+
   type User {
     id: ID!
     nombre: String!

@@ -1,3 +1,5 @@
+import cuid from 'cuid';
+
 export default {
   Query: {
     user: (parent, { id }, { db }) =>
@@ -12,6 +14,53 @@ export default {
             }
           )
         : db.all('select * from Users order by nombre'),
+  },
+  Mutation: {
+    createUser: (parent, { nombre, email }, { db }) => {
+      const id = cuid();
+      return db
+        .run('insert into Users (id, nombre, email) values (?,?,?)', [
+          id,
+          nombre,
+          email,
+        ])
+        .then(response => {
+          console.log(
+            'Insert lastID:',
+            response.stmt.lastID,
+            'changes:',
+            response.stmt.changes
+          );
+          return {
+            id,
+            nombre,
+            email,
+          };
+        });
+    },
+    updateUser: (parent, { id, nombre, email }, { db }) => {
+      const items = [];
+      if (typeof nombre !== 'undefined') items.push('nombre = $nombre');
+      if (typeof email !== 'undefined') items.push('email = $email');
+      return db
+        .run(`update Users set ${items.join(',')}  where id = $id`, {
+          $nombre: nombre,
+          $email: email,
+          $id: id,
+        })
+        .then(result => {
+          if (result.stmt.changes !== 1)
+            throw new Error(`User ${id} not found`);
+          return db.get('select * from Users where id = ?', [id]);
+        });
+    },
+    deleteUser: (parent, { id }, { db }) => {
+      const u = db.get('select * from Users where id = ?', [id]);
+      return db.run('delete from Users where id = ?', [id]).then(result => {
+        if (result.stmt.changes !== 1) throw new Error(`User ${id} not found`);
+        return u;
+      });
+    },
   },
   User: {
     ventas: (parent, { offset = 0, limit, last }, { db }) => {
