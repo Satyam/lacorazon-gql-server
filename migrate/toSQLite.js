@@ -11,6 +11,7 @@ const create = [
     email text
   )`,
   `CREATE UNIQUE INDEX userId ON Users(id)`,
+  `CREATE UNIQUE INDEX userNombre ON Users(nombre)`,
   `insert into Users (id, nombre, email) values
     ('ro','Roxana Cabut','RoxanaCabut@gmail.com'),
     ('ra','Raed El Younsi','reyezuelo@gmail.com'),
@@ -29,6 +30,7 @@ const create = [
     direccion text
   )`,
   'create unique index distribuidorId on Distribuidores(id)',
+  'create unique index distribuidorNombre on Distribuidores(nombre)',
   'drop table if exists Consigna',
   `create table Consigna (
     id integer primary key,
@@ -114,7 +116,7 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
               {
                 $distribuidor: v.codigo.toLowerCase(),
                 $fecha: v.fecha,
-                $vendedor: v.vendedor,
+                $vendedor: v.vendedor.toLowerCase(),
                 $entregados: v.entregados,
                 $porcentaje: v.porcentaje,
                 $vendidos: v.vendidos,
