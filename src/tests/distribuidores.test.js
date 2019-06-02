@@ -1,8 +1,7 @@
 import gqlFetch from './gqlfetch';
 
 describe('distribuidor', () => {
-  describe('single distribuidor', () => {
-    const query = gqlFetch(`
+  const distribuidorQuery = gqlFetch(`
     query ($id: ID!) {
       distribuidor(id:$id) {
         nombre
@@ -10,8 +9,9 @@ describe('distribuidor', () => {
       }
     }
   `);
+  describe('single distribuidor', () => {
     test('distribuidor d1', () =>
-      query({ id: 'd1' }).then(result => {
+      distribuidorQuery({ id: 'd1' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -24,7 +24,7 @@ describe('distribuidor', () => {
                                 `);
       }));
     test('distribuidor d2', () =>
-      query({ id: 'd2' }).then(result => {
+      distribuidorQuery({ id: 'd2' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -37,7 +37,7 @@ describe('distribuidor', () => {
                                 `);
       }));
     test('distribuidor xxxx', () =>
-      query({ id: 'xxxx' }).then(result => {
+      distribuidorQuery({ id: 'xxxx' }).then(result => {
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -247,5 +247,103 @@ describe('distribuidor', () => {
                     }
                 `);
       }));
+  });
+  describe('Mutations', () => {
+    let id;
+    const distribuidor = {
+      nombre: 'pepe',
+      email: 'pepe@correo.com',
+    };
+    const otroNombre = 'pepito';
+    describe('create', () => {
+      const create = gqlFetch(`mutation ($nombre: String!, $email: String) {
+      createDistribuidor(nombre: $nombre, email: $email) {
+        id
+        nombre
+        email
+      }
+    }
+    `);
+      test('single distribuidor', () =>
+        create(distribuidor)
+          .then(result => {
+            const d = result.data.data.createDistribuidor;
+            expect(d.nombre).toBe(distribuidor.nombre);
+            expect(d.email).toBe(distribuidor.email);
+            // eslint-disable-next-line prefer-destructuring
+            id = d.id;
+            return distribuidorQuery({ id });
+          })
+          .then(result => {
+            const d = result.data.data.distribuidor;
+            expect(d.nombre).toBe(distribuidor.nombre);
+            expect(d.email).toBe(distribuidor.email);
+          }));
+      test('duplicate distribuidor name', () =>
+        create(distribuidor).then(result => {
+          expect(result.data.errors.length).toBe(1);
+        }));
+    });
+    describe('update', () => {
+      const update = gqlFetch(`mutation ($id: ID!, $nombre: String, $email: String) {
+        updateDistribuidor(id: $id, nombre: $nombre, email: $email) {
+          id
+          nombre
+          email
+        }
+      }`);
+      test('update pepe', () =>
+        update({
+          id,
+          nombre: otroNombre,
+        })
+          .then(result => {
+            const d = result.data.data.updateDistribuidor;
+            expect(d.nombre).toBe(otroNombre);
+            expect(d.email).toBe(distribuidor.email);
+            return distribuidorQuery({ id });
+          })
+          .then(result => {
+            const d = result.data.data.distribuidor;
+            expect(d.nombre).toBe(otroNombre);
+            expect(d.email).toBe(distribuidor.email);
+          }));
+      test('fail to update distribuidor', () =>
+        update({
+          id: 'xxxx',
+          nombre: otroNombre,
+        }).then(result => {
+          expect(result.data.errors.length).toBe(1);
+        }));
+    });
+    describe('delete', () => {
+      const del = gqlFetch(`mutation ($id: ID!) {
+        deleteDistribuidor(id: $id) {
+          id
+          nombre
+          email
+        }
+      }`);
+      test('delete pepe', () =>
+        del({
+          id,
+        })
+          .then(result => {
+            const d = result.data.data.deleteDistribuidor;
+            expect(d.nombre).toBe(otroNombre);
+            expect(d.email).toBe(distribuidor.email);
+            return distribuidorQuery({ id });
+          })
+          .then(result => {
+            const d = result.data.data.distribuidor;
+            expect(d).toBeNull();
+          }));
+      test('fail to delete distribuidor', () =>
+        del({
+          id: 'xxxx',
+        }).then(result => {
+          expect(result.data.errors.length).toBe(1);
+        }));
+    });
   });
 });
