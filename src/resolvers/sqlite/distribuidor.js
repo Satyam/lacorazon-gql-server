@@ -1,69 +1,23 @@
-import cuid from 'cuid';
+import {
+  getWithId,
+  getAllLimitOffset,
+  createWithId,
+  updateWithId,
+  deleteWithId,
+} from './utils';
+
+const TABLE = 'Distribuidores';
 
 export default {
   Query: {
-    distribuidor: (parent, { id }, { db }) =>
-      db.get('select * from Distribuidores where id = ?', [id]),
-    distribuidores: (parent, { offset = 0, limit }, { db }) =>
-      limit
-        ? db.all(
-            'select * from Distribuidores order by nombre limit $limit offset $offset',
-            {
-              $limit: limit,
-              $offset: offset,
-            }
-          )
-        : db.all('select * from Distribuidores order by nombre'),
+    distribuidor: (parent, { id }, { db }) => getWithId(TABLE, id, db),
+    distribuidores: (parent, args, { db }) =>
+      getAllLimitOffset(TABLE, args, db),
   },
   Mutation: {
-    createDistribuidor: (parent, { nombre, email }, { db }) => {
-      const id = cuid();
-      return db
-        .run('insert into Distribuidores (id, nombre, email) values (?,?,?)', [
-          id,
-          nombre,
-          email,
-        ])
-        .then(response => {
-          console.log(
-            'Insert lastID:',
-            response.stmt.lastID,
-            'changes:',
-            response.stmt.changes
-          );
-          return {
-            id,
-            nombre,
-            email,
-          };
-        });
-    },
-    updateDistribuidor: (parent, args, { db }) => {
-      const { id, ...rest } = args;
-      const ks = Object.keys(rest);
-      const items = ks.map(k => `${k} = ?`);
-      const vars = ks.map(k => rest[k]);
-      return db
-        .run(`update Distribuidores set ${items.join(',')}  where id = $id`, [
-          ...vars,
-          id,
-        ])
-        .then(result => {
-          if (result.stmt.changes !== 1)
-            throw new Error(`Distribuidor ${id} not found`);
-          return db.get('select * from Distribuidores where id = ?', [id]);
-        });
-    },
-    deleteDistribuidor: (parent, { id }, { db }) => {
-      const u = db.get('select * from Distribuidores where id = ?', [id]);
-      return db
-        .run('delete from Distribuidores where id = ?', [id])
-        .then(result => {
-          if (result.stmt.changes !== 1)
-            throw new Error(`Distribuidor ${id} not found`);
-          return u;
-        });
-    },
+    createDistribuidor: (parent, args, { db }) => createWithId(TABLE, args, db),
+    updateDistribuidor: (parent, args, { db }) => updateWithId(TABLE, args, db),
+    deleteDistribuidor: (parent, { id }, { db }) => deleteWithId(TABLE, id, db),
   },
   Distribuidor: {
     consigna: (parent, { offset = 0, limit, last }, { db }) => {

@@ -1,66 +1,22 @@
-import cuid from 'cuid';
+import {
+  getWithId,
+  getAllLimitOffset,
+  createWithId,
+  updateWithId,
+  deleteWithId,
+} from './utils';
+
+const TABLE = 'Users';
 
 export default {
   Query: {
-    user: (parent, { id }, { db }) =>
-      db.get('select * from Users where id = ?', [id]),
-    users: (parent, { offset = 0, limit }, { db }) =>
-      limit
-        ? db.all(
-            'select * from Users order by nombre limit $limit offset $offset',
-            {
-              $limit: limit,
-              $offset: offset,
-            }
-          )
-        : db.all('select * from Users order by nombre'),
+    user: (parent, { id }, { db }) => getWithId(TABLE, id, db),
+    users: (parent, args, { db }) => getAllLimitOffset(TABLE, args, db),
   },
   Mutation: {
-    createUser: (parent, { nombre, email }, { db }) => {
-      const id = cuid();
-      return db
-        .run('insert into Users (id, nombre, email) values (?,?,?)', [
-          id,
-          nombre,
-          email,
-        ])
-        .then(response => {
-          console.log(
-            'Insert lastID:',
-            response.stmt.lastID,
-            'changes:',
-            response.stmt.changes
-          );
-          return {
-            id,
-            nombre,
-            email,
-          };
-        });
-    },
-    updateUser: (parent, { id, nombre, email }, { db }) => {
-      const items = [];
-      if (typeof nombre !== 'undefined') items.push('nombre = $nombre');
-      if (typeof email !== 'undefined') items.push('email = $email');
-      return db
-        .run(`update Users set ${items.join(',')}  where id = $id`, {
-          $nombre: nombre,
-          $email: email,
-          $id: id,
-        })
-        .then(result => {
-          if (result.stmt.changes !== 1)
-            throw new Error(`User ${id} not found`);
-          return db.get('select * from Users where id = ?', [id]);
-        });
-    },
-    deleteUser: (parent, { id }, { db }) => {
-      const u = db.get('select * from Users where id = ?', [id]);
-      return db.run('delete from Users where id = ?', [id]).then(result => {
-        if (result.stmt.changes !== 1) throw new Error(`User ${id} not found`);
-        return u;
-      });
-    },
+    createUser: (parent, args, { db }) => createWithId(TABLE, args, db),
+    updateUser: (parent, args, { db }) => updateWithId(TABLE, args, db),
+    deleteUser: (parent, { id }, { db }) => deleteWithId(TABLE, id, db),
   },
   User: {
     ventas: (parent, { offset = 0, limit, last }, { db }) => {
