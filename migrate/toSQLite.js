@@ -8,7 +8,7 @@ const create = [
   `create table Users (
     id text not null unique,
     nombre text not null,
-    email text
+    email text default ''
   )`,
   `CREATE UNIQUE INDEX userId ON Users(id)`,
   `CREATE UNIQUE INDEX userNombre ON Users(nombre)`,
@@ -21,45 +21,43 @@ const create = [
   `create table Distribuidores (
     id text not null unique,
     nombre text not null,
-    entregados integer,
-    existencias integer,
-    localidad text,
-    contacto text,
-    telefono text,
-    email text,
-    direccion text
+    localidad text  default '',
+    contacto text default '',
+    telefono text default '',
+    email text default '',
+    direccion text default ''
   )`,
   'create unique index distribuidorId on Distribuidores(id)',
   'create unique index distribuidorNombre on Distribuidores(nombre)',
   'drop table if exists Consigna',
   `create table Consigna (
     id integer primary key,
-    fecha text,
-    distribuidor text,
-    vendedor text,
-    entregados integer,
-    porcentaje float,
-    vendidos integer,
-    devueltos integer,
-    cobrado float,
-    iva boolean,
-    comentarios text
+    fecha text default CURRENT_TIMESTAMP,
+    distribuidor text default '',
+    vendedor text default '',
+    entregados integer default 0,
+    porcentaje integer default 0,
+    vendidos integer default 0,
+    devueltos integer default 0,
+    cobrado integer default 0,
+    iva boolean default 0,
+    comentarios text default ''
 )`,
   'drop table if exists Ventas',
   `create table Ventas (
     id integer primary key,
-    concepto text,
-    fecha text,
-    vendedor text,
-    cantidad integer,
-    precioUnitario float
+    concepto text default '',
+    fecha text default CURRENT_TIMESTAMP,
+    vendedor text default '',
+    cantidad integer default 0,
+    precioUnitario integer default 0
   )`,
   'drop table if exists Salidas',
   `create table Salidas (
     id integer primary key,
-    fecha text,
-    concepto text,
-    importe float
+    fecha text default CURRENT_TIMESTAMP,
+    concepto text default '',
+    importe integer default 0
   )`,
 ];
 sqlite.open(process.env.SQLITE_FILE).then(db => {
@@ -74,11 +72,11 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
                 ( concepto , fecha, vendedor , cantidad ,  precioUnitario)
                 values ($concepto, $fecha, $vendedor , $cantidad ,  $precioUnitario)`,
               {
-                $concepto: v.concepto,
-                $fecha: v.fecha,
+                $concepto: v.concepto || '',
+                $fecha: v.fecha || new Date().toISOString(),
                 $vendedor: v.vendedor.toLowerCase(),
-                $cantidad: v.cantidad,
-                $precioUnitario: v.precioUnitario,
+                $cantidad: v.cantidad || 0,
+                $precioUnitario: v.precioUnitario || 0,
               }
             )
           ),
@@ -114,16 +112,16 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
                   $comentarios
                 )`,
               {
-                $distribuidor: v.codigo.toLowerCase(),
-                $fecha: v.fecha,
-                $vendedor: v.vendedor.toLowerCase(),
-                $entregados: v.entregados,
-                $porcentaje: v.porcentaje,
-                $vendidos: v.vendidos,
-                $devueltos: v.devueltos,
-                $cobrado: v.cobrado,
-                $iva: v.iva,
-                $comentarios: v.comentarios,
+                $distribuidor: (v.codigo || '').toLowerCase(),
+                $fecha: v.fecha || new Date().toISOString(),
+                $vendedor: (v.vendedor || '').toLowerCase(),
+                $entregados: v.entregados || 0,
+                $porcentaje: v.porcentaje || 0,
+                $vendidos: v.vendidos || 0,
+                $devueltos: v.devueltos || 0,
+                $cobrado: v.cobrado || 0,
+                $iva: v.iva || 0,
+                $comentarios: v.comentarios || '',
               }
             )
           ),
@@ -138,8 +136,6 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
               `insert into Distribuidores 
               ( id,
                 nombre,
-                entregados,
-                existencias,
                 localidad,
                 contacto,
                 telefono,
@@ -148,8 +144,6 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
               values ( 
                 $id,
                 $nombre,
-                $entregados,
-                $existencias,
                 $localidad,
                 $contacto,
                 $telefono,
@@ -158,13 +152,11 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
               {
                 $id: v.codigo.toLowerCase(),
                 $nombre: v.nombre,
-                $entregados: v.entregados,
-                $existencias: v.existencias,
-                $localidad: v.localidad,
-                $contacto: v.contacto,
-                $telefono: v.telefono,
-                $email: v.email,
-                $direccion: v.direccion,
+                $localidad: v.localidad || '',
+                $contacto: v.contacto || '',
+                $telefono: v.telefono || '',
+                $email: v.email || '',
+                $direccion: v.direccion || '',
               }
             )
           ),
@@ -180,9 +172,9 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
               ( fecha, concepto, importe )
               values ( $fecha, $concepto, $importe)`,
               {
-                $fecha: v.fecha,
-                $concepto: v.concepto,
-                $importe: v.importe,
+                $fecha: v.fecha || new Date().toISOString(),
+                $concepto: v.concepto || '',
+                $importe: v.importe || 0,
               }
             )
           ),
