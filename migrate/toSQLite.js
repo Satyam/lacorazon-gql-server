@@ -1,22 +1,25 @@
 import sqlite from 'sqlite';
 import 'dotenv/config';
-
-import { ventaDirecta, enConsigna, puntosDeVenta, salidas } from './data.json';
+import argon2 from 'argon2';
+import {
+  ventaDirecta,
+  enConsigna,
+  puntosDeVenta,
+  salidas,
+  usuarios,
+} from './data.json';
 
 const create = [
   'drop table if exists Users',
   `create table Users (
     id text not null unique,
     nombre text not null,
-    email text default ''
+    email text default '',
+    password text default ''
   )`,
   `CREATE UNIQUE INDEX userId ON Users(id)`,
   `CREATE UNIQUE INDEX userNombre ON Users(nombre)`,
-  `insert into Users (id, nombre, email) values
-    ('ro','Roxana Cabut','RoxanaCabut@gmail.com'),
-    ('ra','Raed El Younsi','reyezuelo@gmail.com'),
-    ('rora','Roxana & Raed','reyezuelo@gmail.com;RoxanaCabut@gmail.com')
-  `,
+
   'drop table if exists Distribuidores',
   `create table Distribuidores (
     id text not null unique,
@@ -29,6 +32,7 @@ const create = [
   )`,
   'create unique index distribuidorId on Distribuidores(id)',
   'create unique index distribuidorNombre on Distribuidores(nombre)',
+
   'drop table if exists Consigna',
   `create table Consigna (
     id integer primary key,
@@ -43,6 +47,7 @@ const create = [
     iva boolean default 0,
     comentarios text default ''
 )`,
+
   'drop table if exists Ventas',
   `create table Ventas (
     id integer primary key,
@@ -60,9 +65,31 @@ const create = [
     importe integer default 0
   )`,
 ];
+
 sqlite.open(process.env.SQLITE_FILE).then(db => {
   create
     .reduce((p, s) => p.then(() => db.run(s)), Promise.resolve())
+    .then(() =>
+      usuarios.reduce(
+        (p, u) =>
+          p.then(() =>
+            argon2.hash(u.nombre).then(password =>
+              db.run(
+                `insert into Users 
+              (id, nombre, email, password) 
+              values ($id, $nombre, $email, $password)`,
+                {
+                  $id: u.id,
+                  $nombre: u.nombre,
+                  $email: u.email,
+                  $password: password,
+                }
+              )
+            )
+          ),
+        Promise.resolve()
+      )
+    )
     .then(() =>
       ventaDirecta.reduce(
         (p, v) =>

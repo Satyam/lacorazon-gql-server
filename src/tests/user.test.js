@@ -1,4 +1,8 @@
+import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
 import gqlFetch from './gqlfetch';
+
+const jwtVerify = promisify(jwt.verify);
 
 describe('user', () => {
   const userQuery = gqlFetch(`
@@ -173,20 +177,23 @@ describe('user', () => {
     const usuario = {
       nombre: 'pepe',
       email: 'pepe@correo.com',
+      password: 'pepito',
     };
     const otroNombre = 'pepito';
+    const otroPassword = 'pepitito';
     describe('create', () => {
-      const create = gqlFetch(`mutation ($nombre: String!, $email: String) {
-      createUser(nombre: $nombre, email: $email) {
+      const create = gqlFetch(`mutation ($nombre: String!, $email: String, $password: String!) {
+      createUser(nombre: $nombre, email: $email, password: $password) {
         id
         nombre
         email
       }
     }
     `);
-      test('single user', () =>
-        create(usuario)
+      test('single user', () => {
+        return create(usuario)
           .then(result => {
+            expect(result.data.errors).toBeUndefined();
             const u = result.data.data.createUser;
             expect(u.nombre).toBe(usuario.nombre);
             expect(u.email).toBe(usuario.email);
@@ -195,35 +202,97 @@ describe('user', () => {
             return userQuery({ id });
           })
           .then(result => {
+            expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u.nombre).toBe(usuario.nombre);
             expect(u.email).toBe(usuario.email);
-          }));
+          });
+      });
       test('duplicate user name', () =>
         create(usuario).then(result => {
           expect(result.data.errors.length).toBe(1);
         }));
     });
+    describe('login', () => {
+      const login = gqlFetch(`mutation ($nombre: String!, $password: String!) {
+        login(nombre: $nombre, password: $password) {
+          user {
+            id
+            nombre
+            email
+            }
+          token
+        }
+      }`);
+      test('pepe with correct password', () =>
+        login({ nombre: usuario.nombre, password: usuario.password }).then(
+          result => {
+            expect(result.data.errors).toBeUndefined();
+            const { token, user } = result.data.data.login;
+            expect(user.nombre).toBe(usuario.nombre);
+            expect(user.email).toBe(usuario.email);
+            return jwtVerify(token, process.env.JWT_SIGNATURE).then(u => {
+              expect(u.id).toBe(user.id);
+              expect(u.nombre).toBe(user.nombre);
+              expect(u.email).toBe(user.email);
+            });
+          }
+        ));
+      test('pepe with wrong password', () =>
+        login({ nombre: usuario.nombre, password: 'xxxx' }).then(result => {
+          expect(result.data.errors).toBeUndefined();
+          const l = result.data.data.login;
+          expect(l.user).toBeNull();
+          expect(l.token).toBe('');
+        }));
+      test('wrong user', () =>
+        login({ nombre: 'xxxx', password: usuario.password }).then(result => {
+          expect(result.data.errors).toBeUndefined();
+          const l = result.data.data.login;
+          expect(l.user).toBeNull();
+          expect(l.token).toBe('');
+        }));
+    });
     describe('update', () => {
-      const update = gqlFetch(`mutation ($id: ID!, $nombre: String, $email: String) {
-        updateUser(id: $id, nombre: $nombre, email: $email) {
+      const update = gqlFetch(`mutation ($id: ID!, $nombre: String, $email: String, $password: String) {
+        updateUser(id: $id, nombre: $nombre, email: $email, password: $password) {
           id
           nombre
           email
         }
       }`);
-      test('update pepe', () =>
+      test('update nombre de pepe', () =>
         update({
           id,
           nombre: otroNombre,
         })
           .then(result => {
+            expect(result.data.errors).toBeUndefined();
             const u = result.data.data.updateUser;
             expect(u.nombre).toBe(otroNombre);
             expect(u.email).toBe(usuario.email);
             return userQuery({ id });
           })
           .then(result => {
+            expect(result.data.errors).toBeUndefined();
+            const u = result.data.data.user;
+            expect(u.nombre).toBe(otroNombre);
+            expect(u.email).toBe(usuario.email);
+          }));
+      test('update password de pepe', () =>
+        update({
+          id,
+          password: otroPassword,
+        })
+          .then(result => {
+            expect(result.data.errors).toBeUndefined();
+            const u = result.data.data.updateUser;
+            expect(u.nombre).toBe(otroNombre);
+            expect(u.email).toBe(usuario.email);
+            return userQuery({ id });
+          })
+          .then(result => {
+            expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u.nombre).toBe(otroNombre);
             expect(u.email).toBe(usuario.email);
@@ -249,12 +318,14 @@ describe('user', () => {
           id,
         })
           .then(result => {
+            expect(result.data.errors).toBeUndefined();
             const u = result.data.data.deleteUser;
             expect(u.nombre).toBe(otroNombre);
             expect(u.email).toBe(usuario.email);
             return userQuery({ id });
           })
           .then(result => {
+            expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u).toBeNull();
           }));

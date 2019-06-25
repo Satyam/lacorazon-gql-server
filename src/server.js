@@ -23,10 +23,11 @@ export function start() {
                 new ApolloServer({
                   typeDefs: schema,
                   resolvers,
-                  context: {
+                  context: request => ({
                     db,
                     currentUser,
-                  },
+                    request,
+                  }),
                 })
             )
           );
@@ -41,10 +42,11 @@ export function start() {
               new ApolloServer({
                 typeDefs: schema,
                 resolvers,
-                context: {
+                context: request => ({
                   data,
                   currentUser: data.users.ro,
-                },
+                  request,
+                }),
               })
           );
         }
