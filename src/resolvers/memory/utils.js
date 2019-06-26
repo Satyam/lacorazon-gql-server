@@ -41,13 +41,31 @@ export function slice(
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
-export function getWithId(table, id) {
-  return table[id];
+export function pickFields(row, fields) {
+  if (fields && row) {
+    const ret = {};
+    fields.forEach(k => {
+      ret[k] = row[k];
+    });
+    return ret;
+  }
+  return row;
 }
-export function getAllLimitOffset(table, args) {
-  return slice(Object.values(table).sort(compareStringField('nombre')), args);
+
+export function getWithId(table, id, fields) {
+  return pickFields(table[id], fields);
 }
-export function createWithId(table, args) {
+export function getAllLimitOffset(table, args, fields) {
+  const ret = slice(
+    Object.values(table).sort(compareStringField('nombre')),
+    args
+  );
+  if (fields) {
+    return ret.map(row => pickFields(row, fields));
+  }
+  return ret;
+}
+export function createWithId(table, args, outFields) {
   const id = cuid();
   if (id in table) {
     throw new Error(`Primary key id clash`);
@@ -61,9 +79,9 @@ export function createWithId(table, args) {
   };
   // eslint-disable-next-line no-param-reassign
   table[id] = d;
-  return d;
+  return pickFields(d, outFields);
 }
-export function updateWithId(table, args) {
+export function updateWithId(table, args, outFields) {
   const { id, ...rest } = args;
   const d = table[id];
 
@@ -73,9 +91,9 @@ export function updateWithId(table, args) {
   Object.keys(rest).forEach(k => {
     d[k] = rest[k];
   });
-  return d;
+  return pickFields(d, outFields);
 }
-export function deleteWithId(table, id) {
+export function deleteWithId(table, id, outFields) {
   const d = table[id];
 
   if (typeof d === 'undefined') {
@@ -83,5 +101,5 @@ export function deleteWithId(table, id) {
   }
   // eslint-disable-next-line no-param-reassign
   delete table[id];
-  return d;
+  return pickFields(d, outFields);
 }

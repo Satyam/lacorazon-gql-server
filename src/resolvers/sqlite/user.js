@@ -22,11 +22,10 @@ export default {
       getAllLimitOffset(TABLE, args, db, safeFields),
   },
   Mutation: {
-    createUser: (parent, args, { db }) => {
-      return hash(args.password).then(password =>
+    createUser: (parent, args, { db }) =>
+      hash(args.password).then(password =>
         createWithId(TABLE, { ...args, password }, db, safeFields)
-      );
-    },
+      ),
     updateUser: (parent, args, { db }) => {
       if ('password' in args) {
         return hash(args.password).then(password =>
