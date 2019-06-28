@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
@@ -23,10 +24,11 @@ export function start() {
                 new ApolloServer({
                   typeDefs: schema,
                   resolvers,
-                  context: request => ({
+                  context: ({ req, res }) => ({
                     db,
                     currentUser,
-                    request,
+                    req,
+                    res,
                   }),
                 })
             )
@@ -42,11 +44,14 @@ export function start() {
               new ApolloServer({
                 typeDefs: schema,
                 resolvers,
-                context: request => ({
-                  data,
-                  currentUser: data.users.ro,
-                  request,
-                }),
+                context: ({ req, res }) => {
+                  return {
+                    data,
+                    currentUser: data.users.ro,
+                    req,
+                    res,
+                  };
+                },
               })
           );
         }
@@ -59,7 +64,7 @@ export function start() {
       const app = express();
 
       app.use(cors());
-
+      app.use(cookieParser());
       server.applyMiddleware({ app, path: process.env.GRAPHQL });
 
       app.get('/kill', stop);

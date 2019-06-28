@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { promisify } from 'util';
+import dotenv from 'dotenv';
 import gqlFetch from './gqlfetch';
 
-const jwtVerify = promisify(jwt.verify);
+dotenv.config({ path: '.env.tests' });
+dotenv.config();
 
 describe('user', () => {
   const userQuery = gqlFetch(`
@@ -216,41 +217,75 @@ describe('user', () => {
     describe('login', () => {
       const login = gqlFetch(`mutation ($nombre: String!, $password: String!) {
         login(nombre: $nombre, password: $password) {
-          user {
-            id
-            nombre
-            email
-            }
-          token
+          id
+          nombre
+          email
         }
       }`);
+      const currentUser = gqlFetch(`query {
+        currentUser {
+          nombre
+          email
+        }
+      }`);
+      const logout = gqlFetch(`mutation { 
+        logout
+      }`);
+      const jwtMatch = /^jwt=([^;]*)/;
+
       test('pepe with correct password', () =>
         login({ nombre: usuario.nombre, password: usuario.password }).then(
           result => {
             expect(result.data.errors).toBeUndefined();
-            const { token, user } = result.data.data.login;
+            // eslint-disable-next-line no-shadow
+            const { login } = result.data.data;
+            expect(login.nombre).toBe(usuario.nombre);
+            expect(login.email).toBe(usuario.email);
+            const token = result.headers['set-cookie'].find(ck =>
+              jwtMatch.test(ck)
+            );
+            const m = jwtMatch.exec(token);
+            expect(m).not.toBeNull();
+            const webToken = m[1];
+            const user = jwt.verify(webToken, process.env.JWT_SIGNATURE);
             expect(user.nombre).toBe(usuario.nombre);
             expect(user.email).toBe(usuario.email);
-            return jwtVerify(token, process.env.JWT_SIGNATURE).then(u => {
-              expect(u.id).toBe(user.id);
-              expect(u.nombre).toBe(user.nombre);
-              expect(u.email).toBe(user.email);
-            });
           }
         ));
+
+      test('current user', () =>
+        currentUser(null, {
+          headers: {
+            Cookie: `jwt=${jwt.sign(
+              usuario,
+              process.env.JWT_SIGNATURE
+            )};HttpOnly`,
+          },
+        }).then(result => {
+          expect(result.data.errors).toBeUndefined();
+          // eslint-disable-next-line no-shadow
+          const { currentUser } = result.data.data;
+          expect(currentUser.nombre).toBe(usuario.nombre);
+          expect(currentUser.email).toBe(usuario.email);
+        }));
+      test('logout', () =>
+        logout(null).then(result => {
+          expect(result.data.errors).toBeUndefined();
+          expect(result.data.data.logout).toBeNull();
+        }));
       test('pepe with wrong password', () =>
         login({ nombre: usuario.nombre, password: 'xxxx' }).then(result => {
           expect(result.data.errors).toBeUndefined();
-          const l = result.data.data.login;
-          expect(l.user).toBeNull();
-          expect(l.token).toBe('');
+          // eslint-disable-next-line no-shadow
+          const { login } = result.data.data;
+          expect(login).toBeNull();
         }));
       test('wrong user', () =>
         login({ nombre: 'xxxx', password: usuario.password }).then(result => {
           expect(result.data.errors).toBeUndefined();
-          const l = result.data.data.login;
-          expect(l.user).toBeNull();
-          expect(l.token).toBe('');
+          // eslint-disable-next-line no-shadow
+          const { login } = result.data.data;
+          expect(login).toBeNull();
         }));
     });
     describe('update', () => {
