@@ -5,6 +5,7 @@ import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
 import schema from './schema';
+import { extractCurrentUser } from './auth';
 
 export function stop() {
   process.exit(0);
@@ -18,20 +19,17 @@ export function start() {
           console.log('Start with SQLite');
           const sqlite = require('sqlite');
           const resolvers = require('./resolvers/sqlite').default;
-          return sqlite.open(process.env.SQLITE_FILE).then(db =>
-            db.get('Select * from Users where id=0').then(
-              currentUser =>
-                new ApolloServer({
-                  typeDefs: schema,
-                  resolvers,
-                  context: ({ req, res }) => ({
-                    db,
-                    currentUser,
-                    req,
-                    res,
-                  }),
-                })
-            )
+          return sqlite.open(process.env.SQLITE_FILE).then(
+            db =>
+              new ApolloServer({
+                typeDefs: schema,
+                resolvers,
+                context: ({ req, res }) => ({
+                  db,
+                  req,
+                  res,
+                }),
+              })
           );
         }
 
@@ -47,7 +45,6 @@ export function start() {
                 context: ({ req, res }) => {
                   return {
                     data,
-                    currentUser: data.users.ro,
                     req,
                     res,
                   };
@@ -64,7 +61,7 @@ export function start() {
       const app = express();
 
       app.use(cors());
-      app.use(cookieParser());
+      app.use(process.env.GRAPHQL, cookieParser(), extractCurrentUser);
       server.applyMiddleware({ app, path: process.env.GRAPHQL });
 
       app.get('/kill', stop);

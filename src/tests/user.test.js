@@ -272,6 +272,20 @@ describe('user', () => {
         logout(null).then(result => {
           expect(result.data.errors).toBeUndefined();
           expect(result.data.data.logout).toBeNull();
+          const token = result.headers['set-cookie'].find(ck =>
+            jwtMatch.test(ck)
+          );
+          const m = jwtMatch.exec(token);
+          expect(m).not.toBeNull();
+          expect(m[1]).toBeFalsy();
+          const exp = token
+            .split(';')
+            .find(opt => opt.trim().startsWith('expires='));
+          expect(exp).not.toBeUndefined();
+
+          expect(new Date(exp.split('=')[1]).toISOString()).toBe(
+            '1970-01-01T00:00:00.000Z'
+          );
         }));
       test('pepe with wrong password', () =>
         login({ nombre: usuario.nombre, password: 'xxxx' }).then(result => {
