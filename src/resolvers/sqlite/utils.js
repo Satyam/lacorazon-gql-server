@@ -53,10 +53,11 @@ export function updateWithId(table, args, db, outFields) {
 }
 
 export function deleteWithId(table, id, db, outFields) {
-  const u = getWithId(table, id, db, outFields);
-  return db.run(`delete from ${table} where id = ?`, [id]).then(result => {
-    if (result.stmt.changes !== 1)
-      throw new Error(`${id} not found in ${table}`);
-    return u;
-  });
+  return getWithId(table, id, db, outFields).then(u =>
+    db.run(`delete from ${table} where id = ?`, [id]).then(result => {
+      if (result.stmt.changes !== 1)
+        throw new Error(`${id} not found in ${table}`);
+      return u;
+    })
+  );
 }
