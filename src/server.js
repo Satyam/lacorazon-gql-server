@@ -14,8 +14,8 @@ export function stop() {
 export function start() {
   return Promise.resolve()
     .then(() => {
-      switch (process.env.DATA_SOURCE) {
-        case 'SQLite': {
+      switch (process.env.DATA_SOURCE.toLowerCase()) {
+        case 'sqlite': {
           console.log('Start with SQLite');
           const sqlite = require('sqlite');
           const resolvers = require('./resolvers/sqlite').default;
@@ -33,7 +33,7 @@ export function start() {
           );
         }
 
-        case 'JSON': {
+        case 'json': {
           console.log('Start with JSON');
           const resolvers = require('./resolvers/memory').default;
           const { readJson } = require('fs-extra');
@@ -59,8 +59,24 @@ export function start() {
     })
     .then(server => {
       const app = express();
-
-      app.use(cors());
+      // app.use((req, res, next) => {
+      //   res.header('Access-Control-Allow-Origin', '*');
+      //   res.header(
+      //     'Access-Control-Allow-Headers',
+      //     'Origin, X-Requested-With, Content-Type, Accept'
+      //   );
+      //   next();
+      // });
+      app.use(
+        cors()
+        //   {
+        //   origin: '*',
+        //   credentials: true, // <-- REQUIRED backend setting
+        //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        //   preflightContinue: false,
+        //   optionsSuccessStatus: 204,
+        // }
+      );
       app.use(process.env.GRAPHQL, cookieParser(), extractCurrentUser);
       server.applyMiddleware({ app, path: process.env.GRAPHQL });
 
