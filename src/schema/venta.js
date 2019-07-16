@@ -13,5 +13,6 @@ export default gql`
     vendedor: User
     cantidad: Int
     precioUnitario: Float
+    iva: Boolean
   }
 `;

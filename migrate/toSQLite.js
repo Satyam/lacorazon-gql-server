@@ -55,7 +55,8 @@ const create = [
     fecha text default CURRENT_TIMESTAMP,
     vendedor text default '',
     cantidad integer default 0,
-    precioUnitario integer default 0
+    precioUnitario integer default 0,
+    iva boolean default 0
   )`,
   'drop table if exists Salidas',
   `create table Salidas (
