@@ -41,6 +41,12 @@ export function slice(
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
+export function filterBy(arr, field, value) {
+  return typeof value === 'undefined'
+    ? arr
+    : arr.filter(row => row[field] === value);
+}
+
 export function pickFields(row, fields) {
   if (fields && row) {
     const ret = {};
