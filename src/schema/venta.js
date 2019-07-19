@@ -5,11 +5,31 @@ export default gql`
     ventas(offset: Int, limit: Int, last: Int, vendedor: ID): [Venta!]
     venta(id: ID!): Venta
   }
+  extend type Mutation {
+    createVenta(
+      concepto: String!
+      fecha: String!
+      vendedor: ID
+      cantidad: Int
+      precioUnitario: Float
+      iva: Boolean
+    ): Venta!
+    updateVenta(
+      id: ID!
+      concepto: String
+      fecha: String
+      vendedor: ID
+      cantidad: Int
+      precioUnitario: Float
+      iva: Boolean
+    ): Venta!
+    deleteVenta(id: ID!): Venta!
+  }
 
   type Venta {
     id: ID!
     concepto: String!
-    fecha: String
+    fecha: String!
     vendedor: User
     cantidad: Int
     precioUnitario: Float

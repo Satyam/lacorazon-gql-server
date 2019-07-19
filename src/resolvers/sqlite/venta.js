@@ -1,3 +1,7 @@
+import { createWithAutoId, updateById, deleteById } from './utils';
+
+const TABLE = 'Ventas';
+
 export default {
   Query: {
     venta: (parent, { id }, { db }) =>
@@ -37,6 +41,13 @@ export default {
         }
       );
     },
+  },
+  Mutation: {
+    createVenta: (parent, args, { db }) =>
+      createWithAutoId(TABLE, { ...args, iva: args.iva ? 1 : 0 }, db),
+    updateVenta: (parent, args, { db }) =>
+      updateById(TABLE, { ...args, iva: args.iva ? 1 : 0 }, db),
+    deleteVenta: (parent, { id }, { db }) => deleteById(TABLE, id, db),
   },
   Venta: {
     vendedor: (parent, args, { db }) =>

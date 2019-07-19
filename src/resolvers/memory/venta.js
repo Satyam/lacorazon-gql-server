@@ -1,4 +1,11 @@
-import { compareFecha, slice, filterBy } from './utils';
+import {
+  compareFecha,
+  slice,
+  filterBy,
+  createWithCuid,
+  updateById,
+  deleteWithId,
+} from './utils';
 
 export default {
   Query: {
@@ -10,6 +17,11 @@ export default {
         ),
         args
       ),
+  },
+  Mutation: {
+    createVenta: (parent, args, { data }) => createWithCuid(data.ventas, args),
+    updateVenta: (parent, args, { data }) => updateById(data.ventas, args),
+    deleteVenta: (parent, { id }, { data }) => deleteWithId(data.ventas, id),
   },
   Venta: {
     vendedor: (parent, args, { data }) => data.users[parent.vendedor],
