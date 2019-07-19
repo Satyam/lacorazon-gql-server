@@ -58,7 +58,7 @@ export function pickFields(row, fields) {
   return row;
 }
 
-export function getWithId(table, id, fields) {
+export function getById(table, id, fields) {
   return pickFields(table[id], fields);
 }
 export function getAllLimitOffset(table, args, fields) {
@@ -71,7 +71,7 @@ export function getAllLimitOffset(table, args, fields) {
   }
   return ret;
 }
-export function createWithId(table, args, outFields) {
+export function createWithCuid(table, args, outFields) {
   const id = cuid();
   if (id in table) {
     throw new Error(`Primary key id clash`);
@@ -87,7 +87,7 @@ export function createWithId(table, args, outFields) {
   table[id] = d;
   return pickFields(d, outFields);
 }
-export function updateWithId(table, args, outFields) {
+export function updateById(table, args, outFields) {
   const { id, ...rest } = args;
   const d = table[id];
 

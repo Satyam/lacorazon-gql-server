@@ -1,10 +1,10 @@
 import {
   compareFecha,
   slice,
-  getWithId,
+  getById,
   getAllLimitOffset,
-  createWithId,
-  updateWithId,
+  createWithCuid,
+  updateById,
   deleteWithId,
 } from './utils';
 
@@ -19,7 +19,7 @@ const safeFields = ['id', 'nombre', 'email'];
 
 export default {
   Query: {
-    user: (parent, { id }, { data }) => getWithId(data.users, id, safeFields),
+    user: (parent, { id }, { data }) => getById(data.users, id, safeFields),
     users: (parent, args, { data }) =>
       getAllLimitOffset(data.users, args, safeFields),
     currentUser: (parent, args, { req }) => req.currentUser,
@@ -27,15 +27,15 @@ export default {
   Mutation: {
     createUser: (parent, args, { data }) =>
       hashPassword(args.password).then(password =>
-        createWithId(data.users, { ...args, password }, safeFields)
+        createWithCuid(data.users, { ...args, password }, safeFields)
       ),
     updateUser: (parent, args, { data }) => {
       if ('password' in args) {
         return hashPassword(args.password).then(password =>
-          updateWithId(data.users, { ...args, password }, safeFields)
+          updateById(data.users, { ...args, password }, safeFields)
         );
       }
-      return updateWithId(data.users, args, safeFields);
+      return updateById(data.users, args, safeFields);
     },
     deleteUser: (parent, { id }, { data }) =>
       deleteWithId(data.users, id, safeFields),
@@ -44,7 +44,7 @@ export default {
       return row
         ? checkPassword(row.password, password).then(match =>
             match
-              ? sendToken(getWithId(data.users, row.id, safeFields), res)
+              ? sendToken(getById(data.users, row.id, safeFields), res)
               : invalidateToken(res)
           )
         : invalidateToken(res);

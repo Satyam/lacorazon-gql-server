@@ -1,25 +1,25 @@
 import {
   compareFecha,
   slice,
-  getWithId,
+  getById,
   getAllLimitOffset,
-  createWithId,
-  updateWithId,
+  createWithCuid,
+  updateById,
   deleteWithId,
 } from './utils';
 
 export default {
   Query: {
     distribuidor: (parent, { id }, { data }) =>
-      getWithId(data.distribuidores, id),
+      getById(data.distribuidores, id),
     distribuidores: (parent, args, { data }) =>
       getAllLimitOffset(data.distribuidores, args),
   },
   Mutation: {
     createDistribuidor: (parent, args, { data }) =>
-      createWithId(data.distribuidores, args),
+      createWithCuid(data.distribuidores, args),
     updateDistribuidor: (parent, args, { data }) =>
-      updateWithId(data.distribuidores, args),
+      updateById(data.distribuidores, args),
     deleteDistribuidor: (parent, { id }, { data }) =>
       deleteWithId(data.distribuidores, id),
   },

@@ -1,23 +1,24 @@
 import {
-  getWithId,
+  getById,
   getAllLimitOffset,
-  createWithId,
-  updateWithId,
-  deleteWithId,
+  createWithCuid,
+  updateById,
+  deleteById,
 } from './utils';
 
 const TABLE = 'Distribuidores';
 
 export default {
   Query: {
-    distribuidor: (parent, { id }, { db }) => getWithId(TABLE, id, db),
+    distribuidor: (parent, { id }, { db }) => getById(TABLE, id, db),
     distribuidores: (parent, args, { db }) =>
       getAllLimitOffset(TABLE, args, db),
   },
   Mutation: {
-    createDistribuidor: (parent, args, { db }) => createWithId(TABLE, args, db),
-    updateDistribuidor: (parent, args, { db }) => updateWithId(TABLE, args, db),
-    deleteDistribuidor: (parent, { id }, { db }) => deleteWithId(TABLE, id, db),
+    createDistribuidor: (parent, args, { db }) =>
+      createWithCuid(TABLE, args, db),
+    updateDistribuidor: (parent, args, { db }) => updateById(TABLE, args, db),
+    deleteDistribuidor: (parent, { id }, { db }) => deleteById(TABLE, id, db),
   },
   Distribuidor: {
     consigna: (parent, { offset = 0, limit, last }, { db }) => {

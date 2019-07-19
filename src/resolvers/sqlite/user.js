@@ -1,9 +1,9 @@
 import {
-  getWithId,
+  getById,
   getAllLimitOffset,
-  createWithId,
-  updateWithId,
-  deleteWithId,
+  createWithCuid,
+  updateById,
+  deleteById,
 } from './utils';
 
 import {
@@ -18,7 +18,7 @@ const TABLE = 'Users';
 const safeFields = ['id', 'nombre', 'email'];
 export default {
   Query: {
-    user: (parent, { id }, { db }) => getWithId(TABLE, id, db, safeFields),
+    user: (parent, { id }, { db }) => getById(TABLE, id, db, safeFields),
     users: (parent, args, { db }) =>
       getAllLimitOffset(TABLE, args, db, safeFields),
     currentUser: (parent, args, { req }) => req.currentUser,
@@ -26,18 +26,18 @@ export default {
   Mutation: {
     createUser: (parent, args, { db }) =>
       hashPassword(args.password).then(password =>
-        createWithId(TABLE, { ...args, password }, db, safeFields)
+        createWithCuid(TABLE, { ...args, password }, db, safeFields)
       ),
     updateUser: (parent, args, { db }) => {
       if ('password' in args) {
         return hashPassword(args.password).then(password =>
-          updateWithId(TABLE, { ...args, password }, db, safeFields)
+          updateById(TABLE, { ...args, password }, db, safeFields)
         );
       }
-      return updateWithId(TABLE, args, db, safeFields);
+      return updateById(TABLE, args, db, safeFields);
     },
     deleteUser: (parent, { id }, { db }) =>
-      deleteWithId(TABLE, id, db, safeFields),
+      deleteById(TABLE, id, db, safeFields),
     login: (parent, { nombre, password }, { db, res }) =>
       db
         .get('select id, password from Users where nombre = ?', [nombre])
@@ -45,7 +45,7 @@ export default {
           row
             ? checkPassword(row.password, password).then(match =>
                 match
-                  ? getWithId(TABLE, row.id, db, safeFields).then(user =>
+                  ? getById(TABLE, row.id, db, safeFields).then(user =>
                       sendToken(user, res)
                     )
                   : invalidateToken(res)
