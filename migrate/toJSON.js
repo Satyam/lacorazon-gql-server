@@ -27,7 +27,7 @@ Promise.all(
             [id]: {
               ...v,
               id,
-              vendedor: v.vendedor.toLowerCase(),
+              idVendedor: v.vendedor.toLowerCase(),
             },
           };
         }, {}),
@@ -38,7 +38,7 @@ Promise.all(
             ...vs,
             [id]: {
               ...rest,
-              distribuidor: codigo.toLowerCase(),
+              idDistribuidor: codigo.toLowerCase(),
               id,
             },
           };

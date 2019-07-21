@@ -9,7 +9,7 @@ export default gql`
     createVenta(
       concepto: String!
       fecha: String!
-      vendedor: ID
+      idVendedor: ID
       cantidad: Int
       precioUnitario: Float
       iva: Boolean
@@ -18,7 +18,7 @@ export default gql`
       id: ID!
       concepto: String
       fecha: String
-      vendedor: ID
+      idVendedor: ID
       cantidad: Int
       precioUnitario: Float
       iva: Boolean

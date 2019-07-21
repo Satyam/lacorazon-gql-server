@@ -51,6 +51,6 @@ export default {
   },
   Venta: {
     vendedor: (parent, args, { db }) =>
-      db.get('select * from Users where id = ?', [parent.vendedor]),
+      db.get('select * from Users where id = ?', [parent.idVendedor]),
   },
 };

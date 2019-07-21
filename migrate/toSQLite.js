@@ -37,8 +37,8 @@ const create = [
   `create table Consigna (
     id integer primary key,
     fecha text default CURRENT_TIMESTAMP,
-    distribuidor text default '',
-    vendedor text default '',
+    idDistribuidor text default '',
+    idVendedor text default '',
     entregados integer default 0,
     porcentaje integer default 0,
     vendidos integer default 0,
@@ -53,7 +53,7 @@ const create = [
     id integer primary key,
     concepto text default '',
     fecha text default CURRENT_TIMESTAMP,
-    vendedor text default '',
+    idVendedor text default '',
     cantidad integer default 0,
     precioUnitario integer default 0,
     iva boolean default 0
@@ -97,12 +97,12 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
           p.then(() =>
             db.run(
               `insert into Ventas 
-                ( concepto , fecha, vendedor , cantidad ,  precioUnitario)
-                values ($concepto, $fecha, $vendedor , $cantidad ,  $precioUnitario)`,
+                ( concepto , fecha, idVendedor , cantidad ,  precioUnitario)
+                values ($concepto, $fecha, $idVendedor , $cantidad ,  $precioUnitario)`,
               {
                 $concepto: v.concepto || '',
                 $fecha: v.fecha || new Date().toISOString(),
-                $vendedor: v.vendedor.toLowerCase(),
+                $idVendedor: v.vendedor.toLowerCase(),
                 $cantidad: v.cantidad || 0,
                 $precioUnitario: v.precioUnitario || 0,
               }
@@ -117,9 +117,9 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
           p.then(() =>
             db.run(
               `insert into Consigna ( 
-                  distribuidor,
+                  idDistribuidor,
                   fecha,
-                  vendedor,
+                  idVendedor,
                   entregados,
                   porcentaje,
                   vendidos,
@@ -128,9 +128,9 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
                   iva,
                   comentarios
                 ) values (
-                  $distribuidor,
+                  $idDistribuidor,
                   $fecha,
-                  $vendedor,
+                  $idVendedor,
                   $entregados,
                   $porcentaje,
                   $vendidos,
@@ -140,9 +140,9 @@ sqlite.open(process.env.SQLITE_FILE).then(db => {
                   $comentarios
                 )`,
               {
-                $distribuidor: (v.codigo || '').toLowerCase(),
+                $idDistribuidor: (v.codigo || '').toLowerCase(),
                 $fecha: v.fecha || new Date().toISOString(),
-                $vendedor: (v.vendedor || '').toLowerCase(),
+                $idVendedor: (v.vendedor || '').toLowerCase(),
                 $entregados: v.entregados || 0,
                 $porcentaje: v.porcentaje || 0,
                 $vendidos: v.vendidos || 0,
