@@ -27,10 +27,10 @@ export default {
   },
   Consigna: {
     vendedor: (parent, args, { db }) =>
-      db.get('select * from Users where id = ?', [parent.vendedor]),
+      db.get('select * from Users where id = ?', [parent.idVendedor]),
     distribuidor: (parent, args, { db }) =>
       db.get('select * from Distribuidores where id = ?', [
-        parent.distribuidor,
+        parent.idDistribuidor,
       ]),
   },
 };

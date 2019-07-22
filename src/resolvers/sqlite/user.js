@@ -59,9 +59,9 @@ export default {
       if (last) {
         return db
           .all(
-            'select * from Ventas where vendedor = $vendedor order by fecha desc, id desc limit $last',
+            'select * from Ventas where idVendedor = $idVendedor order by fecha desc, id desc limit $last',
             {
-              $vendedor: parent.id,
+              $idVendedor: parent.id,
               $last: last,
             }
           )
@@ -69,18 +69,18 @@ export default {
       }
       if (limit) {
         return db.all(
-          'select * from Ventas where vendedor = $vendedor order by fecha, id limit $limit offset $offset',
+          'select * from Ventas where idVendedor = $idVendedor order by fecha, id limit $limit offset $offset',
           {
-            $vendedor: parent.id,
+            $idVendedor: parent.id,
             $limit: limit,
             $offset: offset,
           }
         );
       }
       return db.all(
-        'select * from Ventas where vendedor = $vendedor order by fecha, id',
+        'select * from Ventas where idVendedor = $idVendedor order by fecha, id',
         {
-          $vendedor: parent.id,
+          $idVendedor: parent.id,
         }
       );
     },

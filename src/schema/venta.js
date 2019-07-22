@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    ventas(offset: Int, limit: Int, last: Int, vendedor: ID): [Venta!]
+    ventas(offset: Int, limit: Int, last: Int, idVendedor: ID): [Venta!]
     venta(id: ID!): Venta
   }
   extend type Mutation {

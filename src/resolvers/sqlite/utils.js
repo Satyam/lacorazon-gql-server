@@ -26,15 +26,7 @@ export function createWithAutoId(table, args, db, outFields) {
       )})`,
       [...vars]
     )
-    .then(response => {
-      console.log(
-        'Insert lastID:',
-        response.stmt.lastID,
-        'changes:',
-        response.stmt.changes
-      );
-      return getById(table, response.stmt.lastID, db, outFields);
-    });
+    .then(response => getById(table, response.stmt.lastID, db, outFields));
 }
 
 export function createWithCuid(table, args, db, outFields) {
@@ -48,15 +40,7 @@ export function createWithCuid(table, args, db, outFields) {
       )})`,
       [id, ...vars]
     )
-    .then(response => {
-      console.log(
-        'Insert lastID:',
-        response.stmt.lastID,
-        'changes:',
-        response.stmt.changes
-      );
-      return getById(table, id, db, outFields);
-    });
+    .then(() => getById(table, id, db, outFields));
 }
 
 export function updateById(table, args, db, outFields) {

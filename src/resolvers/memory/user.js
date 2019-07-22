@@ -57,7 +57,7 @@ export default {
     ventas: (parent, args, { data }) =>
       slice(
         Object.values(data.ventas)
-          .filter(venta => venta.vendedor === parent.id)
+          .filter(venta => venta.idVendedor === parent.id)
           .sort(compareFecha),
         args
       ),

@@ -3,8 +3,8 @@ import gqlFetch from './gqlfetch';
 describe('Ventas', () => {
   describe('ventas', () => {
     const query = gqlFetch(`
-    query ($offset: Int, $limit: Int, $last: Int, $vendedor: ID) {
-      ventas(offset: $offset, limit: $limit, last: $last, vendedor: $vendedor) {
+    query ($offset: Int, $limit: Int, $last: Int, $idVendedor: ID) {
+      ventas(offset: $offset, limit: $limit, last: $last, idVendedor: $idVendedor) {
         concepto
         fecha
         vendedor {
@@ -90,7 +90,7 @@ describe('Ventas', () => {
                                 `);
       }));
     test('Todas las ventas de u3', () =>
-      query({ vendedor: 'u3' }).then(result => {
+      query({ idVendedor: 'u3' }).then(result => {
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(2);
         expect(ventas).toMatchInlineSnapshot(`
@@ -136,7 +136,7 @@ describe('Ventas', () => {
                         `);
       }));
     test('Una venta de u1 salteando la primera', () =>
-      query({ vendedor: 'u1', offset: 1, limit: 1 }).then(result => {
+      query({ idVendedor: 'u1', offset: 1, limit: 1 }).then(result => {
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(1);
         expect(ventas).toMatchInlineSnapshot(`

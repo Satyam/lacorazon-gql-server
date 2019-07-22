@@ -12,9 +12,11 @@ export default {
     venta: (parent, { id }, { data }) => data.ventas[id],
     ventas: (parent, args, { data }) =>
       slice(
-        filterBy(Object.values(data.ventas), 'vendedor', args.vendedor).sort(
-          compareFecha
-        ),
+        filterBy(
+          Object.values(data.ventas),
+          'idVendedor',
+          args.idVendedor
+        ).sort(compareFecha),
         args
       ),
   },
@@ -24,6 +26,6 @@ export default {
     deleteVenta: (parent, { id }, { data }) => deleteWithId(data.ventas, id),
   },
   Venta: {
-    vendedor: (parent, args, { data }) => data.users[parent.vendedor],
+    vendedor: (parent, args, { data }) => data.users[parent.idVendedor],
   },
 };

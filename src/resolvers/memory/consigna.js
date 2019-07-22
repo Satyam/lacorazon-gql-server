@@ -7,8 +7,8 @@ export default {
       slice(Object.values(data.consigna).sort(compareFecha), args),
   },
   Consigna: {
-    vendedor: (parent, args, { data }) => data.users[parent.vendedor],
+    vendedor: (parent, args, { data }) => data.users[parent.idVendedor],
     distribuidor: (parent, args, { data }) =>
-      data.distribuidores[parent.distribuidor],
+      data.distribuidores[parent.idDistribuidor],
   },
 };

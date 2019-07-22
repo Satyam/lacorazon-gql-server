@@ -25,9 +25,9 @@ export default {
       if (last) {
         return db
           .all(
-            'select * from Consigna where distribuidor = $distribuidor order by fecha desc, id desc limit $last',
+            'select * from Consigna where idDistribuidor = $idDistribuidor order by fecha desc, id desc limit $last',
             {
-              $distribuidor: parent.id,
+              $idDistribuidor: parent.id,
               $last: last,
             }
           )
@@ -35,18 +35,18 @@ export default {
       }
       if (limit) {
         return db.all(
-          'select * from Consigna where distribuidor = $distribuidor order by fecha, id limit $limit offset $offset',
+          'select * from Consigna where idDistribuidor = $idDistribuidor order by fecha, id limit $limit offset $offset',
           {
-            $distribuidor: parent.id,
+            $idDistribuidor: parent.id,
             $limit: limit,
             $offset: offset,
           }
         );
       }
       return db.all(
-        'select * from Consigna where distribuidor = $distribuidor order by fecha, id',
+        'select * from Consigna where idDistribuidor = $idDistribuidor order by fecha, id',
         {
-          $distribuidor: parent.id,
+          $idDistribuidor: parent.id,
         }
       );
     },
@@ -55,9 +55,9 @@ export default {
         .get(
           `select 
             total(entregados) - total(vendidos) - total(devueltos) as existencias 
-            from Consigna where distribuidor = $distribuidor`,
+            from Consigna where idDistribuidor = $idDistribuidor`,
           {
-            $distribuidor: parent.id,
+            $idDistribuidor: parent.id,
           }
         )
         .then(row => row.existencias),
@@ -65,9 +65,9 @@ export default {
       db
         .get(
           `select total(entregados) as entregados
-            from Consigna where distribuidor = $distribuidor`,
+            from Consigna where idDistribuidor = $idDistribuidor`,
           {
-            $distribuidor: parent.id,
+            $idDistribuidor: parent.id,
           }
         )
         .then(row => row.entregados),
