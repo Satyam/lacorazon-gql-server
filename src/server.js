@@ -5,7 +5,8 @@ import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
 import schema from './schema';
-import { extractCurrentUser } from './auth';
+// import { extractCurrentUser } from './auth';
+import { checkJwt } from './auth0';
 
 export function stop() {
   process.exit(0);
@@ -77,7 +78,14 @@ export function start() {
         //   optionsSuccessStatus: 204,
         // }
       );
-      app.use(process.env.GRAPHQL, cookieParser(), extractCurrentUser);
+      // app.use(process.env.GRAPHQL, cookieParser(), extractCurrentUser);
+      app.use(process.env.GRAPHQL, cookieParser(), checkJwt);
+      app.use((err, req, res, next) => {
+        if (err) console.error(err);
+        console.log('token', req.token);
+        console.log('user', req.user);
+        next();
+      });
       server.applyMiddleware({ app, path: process.env.GRAPHQL });
 
       app.get('/kill', stop);

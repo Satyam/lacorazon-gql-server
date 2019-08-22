@@ -11,5 +11,8 @@
       "error"
     ],
     "no-console": "off"
+  },
+  "env": {
+    "node": true
   }
 }
