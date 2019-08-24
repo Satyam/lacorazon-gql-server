@@ -6,13 +6,6 @@ import {
   deleteById,
 } from './utils';
 
-import {
-  hashPassword,
-  checkPassword,
-  sendToken,
-  invalidateToken,
-} from '../../auth';
-
 const TABLE = 'Users';
 
 const safeFields = ['id', 'nombre', 'email'];
@@ -25,34 +18,14 @@ export default {
   },
   Mutation: {
     createUser: (parent, args, { db }) =>
-      hashPassword(args.password).then(password =>
-        createWithCuid(TABLE, { ...args, password }, db, safeFields)
-      ),
+      createWithCuid(TABLE, args, db, safeFields),
     updateUser: (parent, args, { db }) => {
-      if ('password' in args) {
-        return hashPassword(args.password).then(password =>
-          updateById(TABLE, { ...args, password }, db, safeFields)
-        );
-      }
       return updateById(TABLE, args, db, safeFields);
     },
-    deleteUser: (parent, { id }, { db }) =>
-      deleteById(TABLE, id, db, safeFields),
-    login: (parent, { nombre, password }, { db, res }) =>
-      db
-        .get('select id, password from Users where nombre = ?', [nombre])
-        .then(row =>
-          row
-            ? checkPassword(row.password, password).then(match =>
-                match
-                  ? getById(TABLE, row.id, db, safeFields).then(user =>
-                      sendToken(user, res)
-                    )
-                  : invalidateToken(res)
-              )
-            : invalidateToken(res)
-        ),
-    logout: (parent, args, { res }) => invalidateToken(res),
+    deleteUser: (parent, { id }, { db, permissions }) =>
+      permissions.includes('user:delete')
+        ? deleteById(TABLE, id, db, safeFields)
+        : new Error('unauthorized'),
   },
   User: {
     ventas: (parent, { offset = 0, limit, last }, { db }) => {

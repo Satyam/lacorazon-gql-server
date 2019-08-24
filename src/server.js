@@ -1,11 +1,9 @@
 /* eslint-disable global-require */
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
 import schema from './schema';
-// import { extractCurrentUser } from './auth';
 import { checkJwt } from './auth0';
 
 export function stop() {
@@ -25,10 +23,9 @@ export function start() {
               new ApolloServer({
                 typeDefs: schema,
                 resolvers,
-                context: ({ req, res }) => ({
+                context: ({ req }) => ({
                   db,
-                  req,
-                  res,
+                  permissions: (req.user && req.user.permissions) || [],
                 }),
               })
           );
@@ -43,13 +40,10 @@ export function start() {
               new ApolloServer({
                 typeDefs: schema,
                 resolvers,
-                context: ({ req, res }) => {
-                  return {
-                    data,
-                    req,
-                    res,
-                  };
-                },
+                context: ({ req }) => ({
+                  data,
+                  permissions: (req.user && req.user.permissions) || [],
+                }),
               })
           );
         }
@@ -78,14 +72,26 @@ export function start() {
         //   optionsSuccessStatus: 204,
         // }
       );
-      // app.use(process.env.GRAPHQL, cookieParser(), extractCurrentUser);
-      app.use(process.env.GRAPHQL, cookieParser(), checkJwt);
-      app.use((err, req, res, next) => {
-        if (err) console.error(err);
-        console.log('token', req.token);
-        console.log('user', req.user);
-        next();
-      });
+      app.use(
+        process.env.GRAPHQL,
+        // (req, res, next) => {
+        //   if (
+        //     req.headers.authorization &&
+        //     req.headers.authorization.split(' ')[0] === 'Bearer'
+        //   ) {
+        //     console.log(req.headers.authorization.split(' ')[1]);
+        //   }
+        //   next();
+        // },
+        checkJwt,
+        (err, req, res, next) => {
+          if (err.name === 'UnauthorizedError') {
+            console.log('unauthorized');
+            next();
+          } else console.error(err);
+        }
+      );
+
       server.applyMiddleware({ app, path: process.env.GRAPHQL });
 
       app.get('/kill', stop);
