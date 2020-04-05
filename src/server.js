@@ -18,17 +18,22 @@ export function start() {
           console.log('Start with SQLite');
           const sqlite = require('sqlite');
           const resolvers = require('./resolvers/sqlite').default;
-          return sqlite.open(process.env.SQLITE_FILE).then(
-            db =>
-              new ApolloServer({
-                typeDefs: schema,
-                resolvers,
-                context: ({ req }) => ({
-                  db,
-                  permissions: (req.user && req.user.permissions) || [],
-                }),
-              })
-          );
+          return sqlite
+            .open({
+              filename: process.env.SQLITE_FILE,
+              driver: require('sqlite3').Database,
+            })
+            .then(
+              db =>
+                new ApolloServer({
+                  typeDefs: schema,
+                  resolvers,
+                  context: ({ req }) => ({
+                    db,
+                    permissions: (req.user && req.user.permissions) || [],
+                  }),
+                })
+            );
         }
 
         case 'json': {
