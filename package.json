@@ -8,15 +8,16 @@
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "test:json": "DATA_SOURCE=JSON npm t",
     "test:sqlite": "DATA_SOURCE=SQLite npm t",
-    "start": "nodemon --exec babel-node src/index.js",
-    "server": "babel-node src/index.js",
-    "server:debug": "babel-node --inspect-brk src/index.js",
+    "start": "nodemon --exec node build/index.js",
+    "server": "node build/index.js",
+    "server:debug": "node --inspect-brk build/index.js",
     "start:json": "DATA_SOURCE=JSON npm start",
     "start:sqlite": "DATA_SOURCE=SQLite npm start",
     "migrate2Json": "babel-node migrate/toJSON.js",
     "migrate2Sqlite": "babel-node migrate/toSQLite.js",
     "clean": "npm run migrate2Json && npm run migrate2Sqlite",
-    "lint": "eslint  \"src/**/*.js\""
+    "lint": "eslint  \"src/**/*.js\"",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -43,7 +44,8 @@
     "eslint-plugin-prettier": "^3.1.3",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.3"
   },
   "dependencies": {
     "apollo-server": "^2.14.0",
