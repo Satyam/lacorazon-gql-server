@@ -26,7 +26,7 @@ export function createWithAutoId(table, args, db, outFields) {
       )})`,
       [...vars]
     )
-    .then((response) => getById(table, response.stmt.lastID, db, outFields));
+    .then((response) => getById(table, response.lastID, db, outFields));
 }
 
 export function createWithCuid(table, args, db, outFields) {
@@ -51,8 +51,7 @@ export function updateById(table, args, db, outFields) {
   return db
     .run(`update ${table}  set ${items.join(',')}  where id = ?`, [...vars, id])
     .then((result) => {
-      if (result.stmt.changes !== 1)
-        throw new Error(`${id} not found in ${table}`);
+      if (result.changes !== 1) throw new Error(`${id} not found in ${table}`);
       return getById(table, id, db, outFields);
     });
 }
@@ -60,8 +59,7 @@ export function updateById(table, args, db, outFields) {
 export function deleteById(table, id, db, outFields) {
   return getById(table, id, db, outFields).then((u) =>
     db.run(`delete from ${table} where id = ?`, [id]).then((result) => {
-      if (result.stmt.changes !== 1)
-        throw new Error(`${id} not found in ${table}`);
+      if (result.changes !== 1) throw new Error(`${id} not found in ${table}`);
       return u;
     })
   );
