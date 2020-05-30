@@ -16,7 +16,7 @@ describe('user', () => {
   `);
   describe('single user', () => {
     test('user u1', () =>
-      userQuery({ id: 'u1' }).then(result => {
+      userQuery({ id: 'u1' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                                   Object {
                                                     "data": Object {
@@ -29,7 +29,7 @@ describe('user', () => {
                                         `);
       }));
     test('user u2', () =>
-      userQuery({ id: 'u2' }).then(result => {
+      userQuery({ id: 'u2' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                               Object {
                                 "data": Object {
@@ -42,7 +42,8 @@ describe('user', () => {
                         `);
       }));
     test('user xxxx should return null', () =>
-      userQuery({ id: 'xxxx' }).then(result => {
+      userQuery({ id: 'xxxx' }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data.data.user).toBeNull();
       }));
   });
@@ -60,7 +61,7 @@ describe('user', () => {
     }
   `);
     test('user u1, all ventas', () =>
-      query({ id: 'u1' }).then(result => {
+      query({ id: 'u1' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                                   Object {
                                                     "data": Object {
@@ -91,7 +92,7 @@ describe('user', () => {
                                         `);
       }));
     test('user u1, last 3 ventas', () =>
-      query({ id: 'u1', last: 3 }).then(result => {
+      query({ id: 'u1', last: 3 }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                                   Object {
                                                     "data": Object {
@@ -119,7 +120,7 @@ describe('user', () => {
         expect(result.data.data.user.ventas.length).toBe(3);
       }));
     test('user u1, 2 items starting at 1', () =>
-      query({ id: 'u1', offset: 1, limit: 2 }).then(result => {
+      query({ id: 'u1', offset: 1, limit: 2 }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                                   Object {
                                                     "data": Object {
@@ -152,7 +153,9 @@ describe('user', () => {
     }
   `);
     test('all users', () =>
-      query({}).then(result => {
+      query({}).then((result) => {
+        expect(result.data.errors).toBeUndefined();
+
         expect(result.data.data.users.length).toBe(3);
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
@@ -193,7 +196,7 @@ describe('user', () => {
     `);
       test('single user', () => {
         return create(usuario)
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.createUser;
             expect(u.nombre).toBe(usuario.nombre);
@@ -202,7 +205,7 @@ describe('user', () => {
             id = u.id;
             return userQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u.nombre).toBe(usuario.nombre);
@@ -210,7 +213,7 @@ describe('user', () => {
           });
       });
       test('duplicate user name', () =>
-        create(usuario).then(result => {
+        create(usuario).then((result) => {
           expect(result.data.errors.length).toBe(1);
         }));
     });
@@ -235,13 +238,13 @@ describe('user', () => {
 
       test('pepe with correct password', () =>
         login({ nombre: usuario.nombre, password: usuario.password }).then(
-          result => {
+          (result) => {
             expect(result.data.errors).toBeUndefined();
             // eslint-disable-next-line no-shadow
             const { login } = result.data.data;
             expect(login.nombre).toBe(usuario.nombre);
             expect(login.email).toBe(usuario.email);
-            const token = result.headers['set-cookie'].find(ck =>
+            const token = result.headers['set-cookie'].find((ck) =>
               jwtMatch.test(ck)
             );
             const m = jwtMatch.exec(token);
@@ -261,7 +264,7 @@ describe('user', () => {
               process.env.JWT_SIGNATURE
             )};HttpOnly`,
           },
-        }).then(result => {
+        }).then((result) => {
           expect(result.data.errors).toBeUndefined();
           // eslint-disable-next-line no-shadow
           const { currentUser } = result.data.data;
@@ -269,10 +272,10 @@ describe('user', () => {
           expect(currentUser.email).toBe(usuario.email);
         }));
       test('logout', () =>
-        logout(null).then(result => {
+        logout(null).then((result) => {
           expect(result.data.errors).toBeUndefined();
           expect(result.data.data.logout).toBeNull();
-          const token = result.headers['set-cookie'].find(ck =>
+          const token = result.headers['set-cookie'].find((ck) =>
             jwtMatch.test(ck)
           );
           const m = jwtMatch.exec(token);
@@ -280,7 +283,7 @@ describe('user', () => {
           expect(m[1]).toBeFalsy();
           const exp = token
             .split(';')
-            .find(opt => opt.trim().startsWith('expires='));
+            .find((opt) => opt.trim().startsWith('expires='));
           expect(exp).not.toBeUndefined();
 
           expect(new Date(exp.split('=')[1]).toISOString()).toBe(
@@ -288,14 +291,14 @@ describe('user', () => {
           );
         }));
       test('pepe with wrong password', () =>
-        login({ nombre: usuario.nombre, password: 'xxxx' }).then(result => {
+        login({ nombre: usuario.nombre, password: 'xxxx' }).then((result) => {
           expect(result.data.errors).toBeUndefined();
           // eslint-disable-next-line no-shadow
           const { login } = result.data.data;
           expect(login).toBeNull();
         }));
       test('wrong user', () =>
-        login({ nombre: 'xxxx', password: usuario.password }).then(result => {
+        login({ nombre: 'xxxx', password: usuario.password }).then((result) => {
           expect(result.data.errors).toBeUndefined();
           // eslint-disable-next-line no-shadow
           const { login } = result.data.data;
@@ -315,14 +318,14 @@ describe('user', () => {
           id,
           nombre: otroNombre,
         })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.updateUser;
             expect(u.nombre).toBe(otroNombre);
             expect(u.email).toBe(usuario.email);
             return userQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u.nombre).toBe(otroNombre);
@@ -333,14 +336,14 @@ describe('user', () => {
           id,
           password: otroPassword,
         })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.updateUser;
             expect(u.nombre).toBe(otroNombre);
             expect(u.email).toBe(usuario.email);
             return userQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u.nombre).toBe(otroNombre);
@@ -350,7 +353,7 @@ describe('user', () => {
         update({
           id: 'xxxx',
           nombre: otroNombre,
-        }).then(result => {
+        }).then((result) => {
           expect(result.data.errors.length).toBe(1);
         }));
     });
@@ -366,14 +369,14 @@ describe('user', () => {
         del({
           id,
         })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.deleteUser;
             expect(u.nombre).toBe(otroNombre);
             expect(u.email).toBe(usuario.email);
             return userQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
             expect(result.data.errors).toBeUndefined();
             const u = result.data.data.user;
             expect(u).toBeNull();
@@ -381,7 +384,7 @@ describe('user', () => {
       test('fail to delete user', () =>
         del({
           id: 'xxxx',
-        }).then(result => {
+        }).then((result) => {
           expect(result.data.errors.length).toBe(1);
         }));
     });

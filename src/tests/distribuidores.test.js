@@ -11,7 +11,7 @@ describe('distribuidor', () => {
   `);
   describe('single distribuidor', () => {
     test('distribuidor d1', () =>
-      distribuidorQuery({ id: 'd1' }).then(result => {
+      distribuidorQuery({ id: 'd1' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -24,7 +24,7 @@ describe('distribuidor', () => {
                                 `);
       }));
     test('distribuidor d2', () =>
-      distribuidorQuery({ id: 'd2' }).then(result => {
+      distribuidorQuery({ id: 'd2' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -37,7 +37,7 @@ describe('distribuidor', () => {
                                 `);
       }));
     test('distribuidor xxxx', () =>
-      distribuidorQuery({ id: 'xxxx' }).then(result => {
+      distribuidorQuery({ id: 'xxxx' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -65,7 +65,7 @@ describe('distribuidor', () => {
     }
   `);
     test('distribuidor d1, all consigna', () =>
-      query({ id: 'd1' }).then(result => {
+      query({ id: 'd1' }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
           Object {
             "data": Object {
@@ -112,7 +112,7 @@ describe('distribuidor', () => {
         `);
       }));
     test('distribuidor d1, last 3 consigna', () =>
-      query({ id: 'd1', last: 3 }).then(result => {
+      query({ id: 'd1', last: 3 }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
           Object {
             "data": Object {
@@ -148,7 +148,7 @@ describe('distribuidor', () => {
         expect(result.data.data.distribuidor.consigna.length).toBe(3);
       }));
     test('distribuidor d1, 2 items starting at 1', () =>
-      query({ id: 'd1', offset: 1, limit: 2 }).then(result => {
+      query({ id: 'd1', offset: 1, limit: 2 }).then((result) => {
         expect(result.data).toMatchInlineSnapshot(`
           Object {
             "data": Object {
@@ -189,7 +189,8 @@ describe('distribuidor', () => {
     }
   `);
     test('all distribuidores', () =>
-      query({}).then(result => {
+      query({}).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data.data.distribuidores.length).toBe(5);
         expect(result.data).toMatchInlineSnapshot(`
           Object {
@@ -226,7 +227,8 @@ describe('distribuidor', () => {
         `);
       }));
     test('2 distribuidores skipping 1', () =>
-      query({ limit: 2, offset: 1 }).then(result => {
+      query({ limit: 2, offset: 1 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data.data.distribuidores.length).toBe(2);
         expect(result.data).toMatchInlineSnapshot(`
                     Object {
@@ -266,7 +268,8 @@ describe('distribuidor', () => {
     `);
       test('single distribuidor', () =>
         create(distribuidor)
-          .then(result => {
+          .then((result) => {
+            expect(result.data.errors).toBeUndefined();
             const d = result.data.data.createDistribuidor;
             expect(d.nombre).toBe(distribuidor.nombre);
             expect(d.email).toBe(distribuidor.email);
@@ -274,13 +277,14 @@ describe('distribuidor', () => {
             id = d.id;
             return distribuidorQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
+            expect(result.data.errors).toBeUndefined();
             const d = result.data.data.distribuidor;
             expect(d.nombre).toBe(distribuidor.nombre);
             expect(d.email).toBe(distribuidor.email);
           }));
       test('duplicate distribuidor name', () =>
-        create(distribuidor).then(result => {
+        create(distribuidor).then((result) => {
           expect(result.data.errors.length).toBe(1);
         }));
     });
@@ -297,13 +301,15 @@ describe('distribuidor', () => {
           id,
           nombre: otroNombre,
         })
-          .then(result => {
+          .then((result) => {
+            expect(result.data.errors).toBeUndefined();
             const d = result.data.data.updateDistribuidor;
             expect(d.nombre).toBe(otroNombre);
             expect(d.email).toBe(distribuidor.email);
             return distribuidorQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
+            expect(result.data.errors).toBeUndefined();
             const d = result.data.data.distribuidor;
             expect(d.nombre).toBe(otroNombre);
             expect(d.email).toBe(distribuidor.email);
@@ -312,7 +318,7 @@ describe('distribuidor', () => {
         update({
           id: 'xxxx',
           nombre: otroNombre,
-        }).then(result => {
+        }).then((result) => {
           expect(result.data.errors.length).toBe(1);
         }));
     });
@@ -328,20 +334,22 @@ describe('distribuidor', () => {
         del({
           id,
         })
-          .then(result => {
+          .then((result) => {
+            expect(result.data.errors).toBeUndefined();
             const d = result.data.data.deleteDistribuidor;
             expect(d.nombre).toBe(otroNombre);
             expect(d.email).toBe(distribuidor.email);
             return distribuidorQuery({ id });
           })
-          .then(result => {
+          .then((result) => {
+            expect(result.data.errors).toBeUndefined();
             const d = result.data.data.distribuidor;
             expect(d).toBeNull();
           }));
       test('fail to delete distribuidor', () =>
         del({
           id: 'xxxx',
-        }).then(result => {
+        }).then((result) => {
           expect(result.data.errors.length).toBe(1);
         }));
     });

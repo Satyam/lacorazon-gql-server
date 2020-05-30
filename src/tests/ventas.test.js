@@ -14,7 +14,8 @@ describe('Ventas', () => {
     }
   `);
     test('todas las ventas', () =>
-      query().then(result => {
+      query().then((result) => {
+        expect(result.data.errors).toBeUndefined();
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(8);
         expect(
@@ -25,7 +26,8 @@ describe('Ventas', () => {
         ).not.toBe('xxx');
       }));
     test('ultimas 3 ventas', () =>
-      query({ last: 3 }).then(result => {
+      query({ last: 3 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(3);
         expect(
@@ -61,7 +63,8 @@ describe('Ventas', () => {
                                 `);
       }));
     test('2 ventas pasando la tercera', () =>
-      query({ limit: 2, offset: 3 }).then(result => {
+      query({ limit: 2, offset: 3 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(2);
         expect(
@@ -90,7 +93,8 @@ describe('Ventas', () => {
                                 `);
       }));
     test('Todas las ventas de u3', () =>
-      query({ idVendedor: 'u3' }).then(result => {
+      query({ idVendedor: 'u3' }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(2);
         expect(ventas).toMatchInlineSnapshot(`
@@ -113,7 +117,8 @@ describe('Ventas', () => {
                 `);
       }));
     test('Las 2 últimas ventas de u1', () =>
-      query({ vendedor: 'u1', last: 2 }).then(result => {
+      query({ vendedor: 'u1', last: 2 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(2);
         expect(ventas).toMatchInlineSnapshot(`
@@ -136,7 +141,8 @@ describe('Ventas', () => {
                         `);
       }));
     test('Una venta de u1 salteando la primera', () =>
-      query({ idVendedor: 'u1', offset: 1, limit: 1 }).then(result => {
+      query({ idVendedor: 'u1', offset: 1, limit: 1 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         const { ventas } = result.data.data;
         expect(ventas.length).toBe(1);
         expect(ventas).toMatchInlineSnapshot(`
@@ -159,7 +165,7 @@ describe('Ventas', () => {
         ventas(last: 1) {
           id
         }
-      }`)().then(result => {
+      }`)().then((result) => {
         ventaId = result.data.data.ventas[0].id;
       })
     );
@@ -175,7 +181,8 @@ describe('Ventas', () => {
     }
   `);
     test('venta', () =>
-      query({ id: ventaId }).then(result => {
+      query({ id: ventaId }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
