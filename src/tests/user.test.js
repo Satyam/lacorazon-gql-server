@@ -217,7 +217,8 @@ describe('user', () => {
           expect(result.data.errors.length).toBe(1);
         }));
     });
-    describe('login', () => {
+    // Since switching to Auth0, login is remote
+    describe.skip('login', () => {
       const login = gqlFetch(`mutation ($nombre: String!, $password: String!) {
         login(nombre: $nombre, password: $password) {
           id
