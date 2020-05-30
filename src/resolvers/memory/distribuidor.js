@@ -27,7 +27,7 @@ export default {
     consigna: (parent, args, { data }) =>
       slice(
         Object.values(data.consigna)
-          .filter(consigna => consigna.idDistribuidor === parent.id)
+          .filter((consigna) => consigna.idDistribuidor === parent.id)
           .sort(compareFecha),
         args
       ),

@@ -18,7 +18,7 @@ export default {
               $idVendedor: idVendedor,
             }
           )
-          .then(data => data.reverse());
+          .then((data) => data.reverse());
       }
       if (limit) {
         return db.all(

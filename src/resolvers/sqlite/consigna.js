@@ -11,7 +11,7 @@ export default {
               $last: last,
             }
           )
-          .then(data => data.reverse());
+          .then((data) => data.reverse());
       }
       if (limit) {
         return db.all(

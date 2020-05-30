@@ -44,13 +44,13 @@ export function slice(
 export function filterBy(arr, field, value) {
   return typeof value === 'undefined'
     ? arr
-    : arr.filter(row => row[field] === value);
+    : arr.filter((row) => row[field] === value);
 }
 
 export function pickFields(row, fields) {
   if (fields && row) {
     const ret = {};
-    fields.forEach(k => {
+    fields.forEach((k) => {
       ret[k] = row[k];
     });
     return ret;
@@ -67,7 +67,7 @@ export function getAllLimitOffset(table, args, fields) {
     args
   );
   if (fields) {
-    return ret.map(row => pickFields(row, fields));
+    return ret.map((row) => pickFields(row, fields));
   }
   return ret;
 }
@@ -76,7 +76,7 @@ export function createWithCuid(table, args, outFields) {
   if (id in table) {
     throw new Error(`Primary key id clash`);
   }
-  if (Object.values(table).find(d => d.nombre === args.nombre)) {
+  if (Object.values(table).find((d) => d.nombre === args.nombre)) {
     throw new Error(`Duplicate nombre ${args.nombre} found`);
   }
   const d = {
@@ -94,7 +94,7 @@ export function updateById(table, args, outFields) {
   if (typeof d === 'undefined') {
     throw new Error(`${id} not found`);
   }
-  Object.keys(rest).forEach(k => {
+  Object.keys(rest).forEach((k) => {
     d[k] = rest[k];
   });
   return pickFields(d, outFields);

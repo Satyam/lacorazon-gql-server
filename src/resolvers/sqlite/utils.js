@@ -18,7 +18,7 @@ export function getById(table, id, db, fields) {
 
 export function createWithAutoId(table, args, db, outFields) {
   const fields = Object.keys(args);
-  const vars = fields.map(f => args[f]);
+  const vars = fields.map((f) => args[f]);
   return db
     .run(
       `insert into ${table} (${fields.join(',')}) values (? ${',?'.repeat(
@@ -26,13 +26,13 @@ export function createWithAutoId(table, args, db, outFields) {
       )})`,
       [...vars]
     )
-    .then(response => getById(table, response.stmt.lastID, db, outFields));
+    .then((response) => getById(table, response.stmt.lastID, db, outFields));
 }
 
 export function createWithCuid(table, args, db, outFields) {
   const id = cuid();
   const fields = Object.keys(args);
-  const vars = fields.map(f => args[f]);
+  const vars = fields.map((f) => args[f]);
   return db
     .run(
       `insert into ${table} (id, ${fields.join(',')}) values (? ${',?'.repeat(
@@ -46,11 +46,11 @@ export function createWithCuid(table, args, db, outFields) {
 export function updateById(table, args, db, outFields) {
   const { id, ...rest } = args;
   const fields = Object.keys(rest);
-  const items = fields.map(f => `${f} = ?`);
-  const vars = fields.map(f => rest[f]);
+  const items = fields.map((f) => `${f} = ?`);
+  const vars = fields.map((f) => rest[f]);
   return db
     .run(`update ${table}  set ${items.join(',')}  where id = ?`, [...vars, id])
-    .then(result => {
+    .then((result) => {
       if (result.stmt.changes !== 1)
         throw new Error(`${id} not found in ${table}`);
       return getById(table, id, db, outFields);
@@ -58,8 +58,8 @@ export function updateById(table, args, db, outFields) {
 }
 
 export function deleteById(table, id, db, outFields) {
-  return getById(table, id, db, outFields).then(u =>
-    db.run(`delete from ${table} where id = ?`, [id]).then(result => {
+  return getById(table, id, db, outFields).then((u) =>
+    db.run(`delete from ${table} where id = ?`, [id]).then((result) => {
       if (result.stmt.changes !== 1)
         throw new Error(`${id} not found in ${table}`);
       return u;
@@ -68,8 +68,8 @@ export function deleteById(table, id, db, outFields) {
 }
 
 export function delay(ms) {
-  return value =>
-    new Promise(resolve => {
+  return (value) =>
+    new Promise((resolve) => {
       setTimeout(() => resolve(value), ms);
     });
 }

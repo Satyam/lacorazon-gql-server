@@ -13,7 +13,7 @@ import {
   checkPassword,
   sendToken,
   invalidateToken,
-} from '../../auth';
+} from '../../auth0';
 
 const safeFields = ['id', 'nombre', 'email'];
 
@@ -26,12 +26,12 @@ export default {
   },
   Mutation: {
     createUser: (parent, args, { data }) =>
-      hashPassword(args.password).then(password =>
+      hashPassword(args.password).then((password) =>
         createWithCuid(data.users, { ...args, password }, safeFields)
       ),
     updateUser: (parent, args, { data }) => {
       if ('password' in args) {
-        return hashPassword(args.password).then(password =>
+        return hashPassword(args.password).then((password) =>
           updateById(data.users, { ...args, password }, safeFields)
         );
       }
@@ -40,13 +40,13 @@ export default {
     deleteUser: (parent, { id }, { data }) =>
       deleteWithId(data.users, id, safeFields),
     login: (parent, { nombre, password }, { data, res }) => {
-      const row = Object.values(data.users).find(u => u.nombre === nombre);
+      const row = Object.values(data.users).find((u) => u.nombre === nombre);
       return row
-        ? checkPassword(row.password, password).then(match =>
-            match
-              ? sendToken(getById(data.users, row.id, safeFields), res)
-              : invalidateToken(res)
-          )
+        ? checkPassword(row.password, password).then((match) =>
+          match
+            ? sendToken(getById(data.users, row.id, safeFields), res)
+            : invalidateToken(res)
+        )
         : invalidateToken(res);
     },
     logout: (parent, args, { res }) => {
@@ -57,7 +57,7 @@ export default {
     ventas: (parent, args, { data }) =>
       slice(
         Object.values(data.ventas)
-          .filter(venta => venta.idVendedor === parent.id)
+          .filter((venta) => venta.idVendedor === parent.id)
           .sort(compareFecha),
         args
       ),

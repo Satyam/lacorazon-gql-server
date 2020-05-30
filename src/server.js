@@ -24,7 +24,7 @@ export function start() {
               driver: require('sqlite3').Database,
             })
             .then(
-              db =>
+              (db) =>
                 new ApolloServer({
                   typeDefs: schema,
                   resolvers,
@@ -41,7 +41,7 @@ export function start() {
           const resolvers = require('./resolvers/memory').default;
           const { readJson } = require('fs-extra');
           return readJson(process.env.JSON_FILE).then(
-            data =>
+            (data) =>
               new ApolloServer({
                 typeDefs: schema,
                 resolvers,
@@ -57,7 +57,7 @@ export function start() {
           return null;
       }
     })
-    .then(server => {
+    .then((server) => {
       const app = express();
       // app.use((req, res, next) => {
       //   res.header('Access-Control-Allow-Origin', '*');
@@ -102,7 +102,7 @@ export function start() {
       app.get('/kill', stop);
 
       const PORT = process.env.SERVER_PORT || 8000;
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         app.listen({ port: PORT }, () => {
           console.log(
             `Apollo Server on ${process.env.HOST}:${PORT}${process.env.GRAPHQL}`
