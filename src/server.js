@@ -91,7 +91,7 @@ export function start() {
         checkJwt,
         (err, req, res, next) => {
           if (err.name === 'UnauthorizedError') {
-            console.log('unauthorized');
+            // console.log('unauthorized');
             next();
           } else console.error(err);
         }
