@@ -22,10 +22,10 @@ export default {
     updateUser: (parent, args, { db }) => {
       return updateById(TABLE, args, db, safeFields);
     },
-    deleteUser: (parent, { id }, { db, permissions }) =>
-      permissions.includes('user:delete')
-        ? deleteById(TABLE, id, db, safeFields)
-        : new Error('unauthorized'),
+    deleteUser: (parent, { id }, { db /* , permissions */ }) =>
+      // permissions.includes('user:delete')
+      /* ? */ deleteById(TABLE, id, db, safeFields),
+    // : new Error('unauthorized'),
   },
   User: {
     ventas: (parent, { offset = 0, limit, last }, { db }) => {
