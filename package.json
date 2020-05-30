@@ -71,7 +71,7 @@
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
     },
-    "globalSetup": "./src/tests/setup.js",
-    "globalTeardown": "./src/tests/teardown.js"
+    "globalSetup": "./build/tests/setup.js",
+    "globalTeardown": "./build/tests/teardown.js"
   }
 }
