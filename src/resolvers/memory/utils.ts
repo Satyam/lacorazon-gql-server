@@ -1,27 +1,21 @@
 import cuid from 'cuid';
 
-export function compareFecha(a, b) {
-  if (a.fecha < b.fecha) {
-    return -1;
-  }
-  if (a.fecha > b.fecha) {
-    return 1;
-  }
-  return a.id - b.id;
-}
-
-export function compareString(a, b) {
-  if (a < b) {
-    return -1;
-  }
-  if (a > b) {
-    return 1;
-  }
+export function compareFecha(a: { fecha: Date, id: ID }, b: { fecha: Date, id: ID }) {
+  if (a.fecha < b.fecha) return -1;
+  if (a.fecha > b.fecha) return 1;
+  if (a.id > b.id) return -1;
+  if (a.id > b.id) return 1;
   return 0;
 }
 
-export function compareStringField(field) {
-  return (a, b) => {
+export function compareString(a: string, b: string) {
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+}
+
+export function compareStringField(field: string) {
+  return (a: object, b: object) => {
     const fa = a[field];
     const fb = b[field];
     if (fa < fb) {
@@ -35,19 +29,19 @@ export function compareStringField(field) {
 }
 
 export function slice(
-  arr,
-  { offset = 0, limit = Number.MAX_SAFE_INTEGER, last }
+  arr: any[],
+  { offset = 0, limit = Number.MAX_SAFE_INTEGER, last }: Rango
 ) {
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
-export function filterBy(arr, field, value) {
+export function filterBy(arr: any[], field: string, value: any) {
   return typeof value === 'undefined'
     ? arr
     : arr.filter((row) => row[field] === value);
 }
 
-export function pickFields(row, fields) {
+export function pickFields(row: object, fields: string[]) {
   if (fields && row) {
     const ret = {};
     fields.forEach((k) => {
@@ -58,10 +52,11 @@ export function pickFields(row, fields) {
   return row;
 }
 
-export function getById(table, id, fields) {
+export function getById(table: Tabla, id: ID, fields?: string[]) {
   return pickFields(table[id], fields);
 }
-export function getAllLimitOffset(table, args, fields) {
+
+export function getAllLimitOffset(table: Tabla, args: Rango, fields?: string[]) {
   const ret = slice(
     Object.values(table).sort(compareStringField('nombre')),
     args
@@ -71,13 +66,16 @@ export function getAllLimitOffset(table, args, fields) {
   }
   return ret;
 }
-export function createWithCuid(table, args, outFields) {
+
+export function createWithCuid(table: Tabla, args: Fila, outFields?: string[]) {
   const id = cuid();
   if (id in table) {
     throw new Error(`Primary key id clash`);
   }
-  if (Object.values(table).find((d) => d.nombre === args.nombre)) {
-    throw new Error(`Duplicate nombre ${args.nombre} found`);
+  if ('nombre' in args) {
+    if (Object.values(table).find((d) => d.nombre === args.nombre)) {
+      throw new Error(`Duplicate nombre ${args.nombre} found`);
+    }
   }
   const d = {
     id,
@@ -87,7 +85,8 @@ export function createWithCuid(table, args, outFields) {
   table[id] = d;
   return pickFields(d, outFields);
 }
-export function updateById(table, args, outFields) {
+
+export function updateById(table: Tabla, args: Fila, outFields?: string[]) {
   const { id, ...rest } = args;
   const d = table[id];
 
@@ -99,7 +98,8 @@ export function updateById(table, args, outFields) {
   });
   return pickFields(d, outFields);
 }
-export function deleteWithId(table, id, outFields) {
+
+export function deleteWithId(table: Tabla, id: ID, outFields?: string[]) {
   const d = table[id];
 
   if (typeof d === 'undefined') {

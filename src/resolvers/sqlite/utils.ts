@@ -1,6 +1,7 @@
 import cuid from 'cuid';
+import { Database } from 'sqlite';
 
-export function getAllLimitOffset(table, { offset = 0, limit }, db, fields) {
+export function getAllLimitOffset(table: string, { offset = 0, limit }: { offset?: number, limit?: number }, db: Database, fields?: string[]) {
   const f = fields ? fields.join(',') : '*';
   if (limit) {
     return db.all(
@@ -11,12 +12,12 @@ export function getAllLimitOffset(table, { offset = 0, limit }, db, fields) {
   return db.all(`select * from ${table} order by nombre`);
 }
 
-export function getById(table, id, db, fields) {
+export function getById(table: string, id: ID, db: Database, fields?: string[]) {
   const f = fields ? fields.join(',') : '*';
   return db.get(`select ${f} from ${table} where id = ?`, [id]);
 }
 
-export function createWithAutoId(table, args, db, outFields) {
+export function createWithAutoId(table: string, args: object, db: Database, outFields?: string[]) {
   const fields = Object.keys(args);
   const vars = fields.map((f) => args[f]);
   return db
@@ -29,7 +30,7 @@ export function createWithAutoId(table, args, db, outFields) {
     .then((response) => getById(table, response.lastID, db, outFields));
 }
 
-export function createWithCuid(table, args, db, outFields) {
+export function createWithCuid(table: string, args: object, db: Database, outFields?: string[]) {
   const id = cuid();
   const fields = Object.keys(args);
   const vars = fields.map((f) => args[f]);
@@ -43,7 +44,7 @@ export function createWithCuid(table, args, db, outFields) {
     .then(() => getById(table, id, db, outFields));
 }
 
-export function updateById(table, args, db, outFields) {
+export function updateById(table: string, args: { id: ID } & object, db: Database, outFields?: string[]) {
   const { id, ...rest } = args;
   const fields = Object.keys(rest);
   const items = fields.map((f) => `${f} = ?`);
@@ -56,7 +57,7 @@ export function updateById(table, args, db, outFields) {
     });
 }
 
-export function deleteById(table, id, db, outFields) {
+export function deleteById(table: string, id: ID, db: Database, outFields?: string[]) {
   return getById(table, id, db, outFields).then((u) =>
     db.run(`delete from ${table} where id = ?`, [id]).then((result) => {
       if (result.changes !== 1) throw new Error(`${id} not found in ${table}`);
@@ -65,7 +66,7 @@ export function deleteById(table, id, db, outFields) {
   );
 }
 
-export function delay(ms) {
+export function delay(ms: number) {
   return (value) =>
     new Promise((resolve) => {
       setTimeout(() => resolve(value), ms);

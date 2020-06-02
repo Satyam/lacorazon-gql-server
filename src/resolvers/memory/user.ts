@@ -12,21 +12,21 @@ const safeFields = ['id', 'nombre', 'email'];
 
 export default {
   Query: {
-    user: (parent, { id }, { data }) => getById(data.users, id, safeFields),
-    users: (parent, args, { data }) =>
+    user: (parent, { id }: { id: ID }, { data }: { data: JSONData }) => getById(data.users, id, safeFields),
+    users: (parent, args: Rango, { data }: { data: JSONData }) =>
       getAllLimitOffset(data.users, args, safeFields),
     currentUser: (parent, args, { req }) => req.currentUser,
   },
   Mutation: {
-    createUser: (parent, args, { data }) =>
+    createUser: (parent, args: User, { data }: { data: JSONData }) =>
       createWithCuid(data.users, args, safeFields),
-    updateUser: (parent, args, { data }) =>
+    updateUser: (parent, args: User, { data }: { data: JSONData }) =>
       updateById(data.users, args, safeFields),
-    deleteUser: (parent, { id }, { data }) =>
+    deleteUser: (parent, { id }: { id: ID }, { data }) =>
       deleteWithId(data.users, id, safeFields),
   },
   User: {
-    ventas: (parent, args, { data }) =>
+    ventas: (parent: User, args, { data }: { data: JSONData }) =>
       slice(
         Object.values(data.ventas)
           .filter((venta) => venta.idVendedor === parent.id)

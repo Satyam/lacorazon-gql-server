@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import express from 'express';
+import express, { Request } from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
@@ -16,42 +16,47 @@ export function start() {
       switch (process.env.DATA_SOURCE.toLowerCase()) {
         case 'sqlite': {
           console.log('Start with SQLite');
-          const sqlite = require('sqlite');
-          const resolvers = require('./resolvers/sqlite').default;
-          return sqlite
-            .open({
-              filename: process.env.SQLITE_FILE,
-              driver: require('sqlite3').Database,
-            })
-            .then(
-              (db) =>
-                new ApolloServer({
-                  typeDefs: schema,
-                  resolvers,
-                  context: ({ req }) => ({
-                    db,
-                    permissions: (req.user && req.user.permissions) || [],
-                  }),
-                })
-            );
+          return import('sqlite')
+            .then(sqlite => import('./resolvers/sqlite')
+              .then(resolvers => import('sqlite3')
+                .then(sqlite3 =>
+                  sqlite
+                    .open({
+                      filename: process.env.SQLITE_FILE,
+                      driver: sqlite3.Database,
+                    })
+                    .then(
+                      (db) =>
+                        new ApolloServer({
+                          typeDefs: schema,
+                          resolvers: resolvers.default,
+                          context: ({ req }) => ({
+                            db,
+                            // @ts-ignore
+                            permissions: (req.user && req.user.permissions) || [],
+                          }),
+                        })
+                    )))
+
+            )
         }
 
-        case 'json': {
+        case 'json':
           console.log('Start with JSON');
-          const resolvers = require('./resolvers/memory').default;
-          const { readJson } = require('fs-extra');
-          return readJson(process.env.JSON_FILE).then(
-            (data) =>
-              new ApolloServer({
-                typeDefs: schema,
-                resolvers,
-                context: ({ req }) => ({
-                  data,
-                  permissions: (req.user && req.user.permissions) || [],
-                }),
-              })
-          );
-        }
+          return import('./resolvers/memory')
+            .then(resolvers => import('fs-extra')
+              .then(fs => fs.readJson(process.env.JSON_FILE)
+                .then((data: JSONData) =>
+                  new ApolloServer({
+                    typeDefs: schema,
+                    resolvers: resolvers.default,
+                    context: ({ req }) => ({
+                      data,
+                      // @ts-ignore
+                      permissions: (req.user && req.user.permissions) || [],
+                    }),
+                  }))))
+
         default:
           console.error('No data source given');
           return null;
