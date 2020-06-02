@@ -1,3 +1,6 @@
+import { Distribuidor } from '..'
+import type { sqlContext } from '.'
+
 import {
   getById,
   getAllLimitOffset,
@@ -10,18 +13,18 @@ const TABLE = 'Distribuidores';
 
 export default {
   Query: {
-    distribuidor: (parent, { id }, { db }) => getById(TABLE, id, db),
-    distribuidores: (parent, args, { db }) =>
+    distribuidor: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db),
+    distribuidores: (parent: unused, args: Rango, { db }: sqlContext) =>
       getAllLimitOffset(TABLE, args, db),
   },
   Mutation: {
-    createDistribuidor: (parent, args, { db }) =>
+    createDistribuidor: (parent: unused, args: Distribuidor, { db }: sqlContext) =>
       createWithCuid(TABLE, args, db),
-    updateDistribuidor: (parent, args, { db }) => updateById(TABLE, args, db),
-    deleteDistribuidor: (parent, { id }, { db }) => deleteById(TABLE, id, db),
+    updateDistribuidor: (parent: unused, args: Distribuidor, { db }: sqlContext) => updateById(TABLE, args, db),
+    deleteDistribuidor: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
   },
   Distribuidor: {
-    consigna: (parent, { offset = 0, limit, last }, { db }) => {
+    consigna: (parent: Distribuidor, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
       if (last) {
         return db
           .all(
@@ -50,7 +53,7 @@ export default {
         }
       );
     },
-    existencias: (parent, args, { db }) =>
+    existencias: (parent: Distribuidor, args: unused, { db }: sqlContext) =>
       db
         .get(
           `select 
@@ -61,7 +64,7 @@ export default {
           }
         )
         .then((row) => row.existencias),
-    entregados: (parent, args, { db }) =>
+    entregados: (parent: Distribuidor, args: unused, { db }: sqlContext) =>
       db
         .get(
           `select total(entregados) as entregados

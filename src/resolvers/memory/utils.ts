@@ -1,4 +1,6 @@
 import cuid from 'cuid';
+import { Tabla } from '.'
+import { Fila } from '..'
 
 export function compareFecha(a: { fecha: Date, id: ID }, b: { fecha: Date, id: ID }) {
   if (a.fecha < b.fecha) return -1;
@@ -15,7 +17,7 @@ export function compareString(a: string, b: string) {
 }
 
 export function compareStringField(field: string) {
-  return (a: object, b: object) => {
+  return (a: { [field: string]: string }, b: { [field: string]: string }) => {
     const fa = a[field];
     const fb = b[field];
     if (fa < fb) {
@@ -41,7 +43,7 @@ export function filterBy(arr: any[], field: string, value: any) {
     : arr.filter((row) => row[field] === value);
 }
 
-export function pickFields(row: object, fields: string[]) {
+export function pickFields(row: Partial<Fila>, fields: string[]) {
   if (fields && row) {
     const ret = {};
     fields.forEach((k) => {
@@ -86,14 +88,14 @@ export function createWithCuid(table: Tabla, args: Fila, outFields?: string[]) {
   return pickFields(d, outFields);
 }
 
-export function updateById(table: Tabla, args: Fila, outFields?: string[]) {
+export function updateById(table: Tabla, args: Partial<Fila>, outFields?: string[]) {
   const { id, ...rest } = args;
-  const d = table[id];
+  const d: Fila = table[id];
 
   if (typeof d === 'undefined') {
     throw new Error(`${id} not found`);
   }
-  Object.keys(rest).forEach((k) => {
+  Object.keys(rest).forEach((k: string) => {
     d[k] = rest[k];
   });
   return pickFields(d, outFields);

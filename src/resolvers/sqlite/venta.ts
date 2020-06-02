@@ -1,12 +1,14 @@
+import type { sqlContext } from '.'
+import { Venta } from '..'
 import { createWithAutoId, updateById, deleteById } from './utils';
 
 const TABLE = 'Ventas';
 
 export default {
   Query: {
-    venta: (parent, { id }, { db }) =>
+    venta: (parent: unused, { id }: { id: ID }, { db }: sqlContext) =>
       db.get('select * from Ventas where id = ?', [id]),
-    ventas: (parent, { offset = 0, limit, last, idVendedor }, { db }) => {
+    ventas: (parent: unused, { offset = 0, limit, last, idVendedor }: Rango & { idVendedor: ID }, { db }: sqlContext) => {
       if (last) {
         return db
           .all(
@@ -43,14 +45,14 @@ export default {
     },
   },
   Mutation: {
-    createVenta: (parent, args, { db }) =>
+    createVenta: (parent: unused, args: Venta, { db }: sqlContext) =>
       createWithAutoId(TABLE, { ...args, iva: args.iva ? 1 : 0 }, db),
-    updateVenta: (parent, args, { db }) =>
-      updateById(TABLE, { ...args, iva: args.iva ? 1 : 0 }, db),
-    deleteVenta: (parent, { id }, { db }) => deleteById(TABLE, id, db),
+    updateVenta: (parent: unused, args: Venta, { db }: sqlContext) =>
+      updateById(TABLE, args, db),
+    deleteVenta: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
   },
   Venta: {
-    vendedor: (parent, args, { db }) =>
+    vendedor: (parent: Venta, args: unused, { db }: sqlContext) =>
       db.get('select * from Users where id = ?', [parent.idVendedor]),
   },
 };

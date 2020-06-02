@@ -1,5 +1,6 @@
 import cuid from 'cuid';
 import { Database } from 'sqlite';
+import { Fila } from '..'
 
 export function getAllLimitOffset(table: string, { offset = 0, limit }: { offset?: number, limit?: number }, db: Database, fields?: string[]) {
   const f = fields ? fields.join(',') : '*';
@@ -17,7 +18,7 @@ export function getById(table: string, id: ID, db: Database, fields?: string[]) 
   return db.get(`select ${f} from ${table} where id = ?`, [id]);
 }
 
-export function createWithAutoId(table: string, args: object, db: Database, outFields?: string[]) {
+export function createWithAutoId(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
   const fields = Object.keys(args);
   const vars = fields.map((f) => args[f]);
   return db
@@ -30,7 +31,7 @@ export function createWithAutoId(table: string, args: object, db: Database, outF
     .then((response) => getById(table, response.lastID, db, outFields));
 }
 
-export function createWithCuid(table: string, args: object, db: Database, outFields?: string[]) {
+export function createWithCuid(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
   const id = cuid();
   const fields = Object.keys(args);
   const vars = fields.map((f) => args[f]);
@@ -44,7 +45,7 @@ export function createWithCuid(table: string, args: object, db: Database, outFie
     .then(() => getById(table, id, db, outFields));
 }
 
-export function updateById(table: string, args: { id: ID } & object, db: Database, outFields?: string[]) {
+export function updateById(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
   const { id, ...rest } = args;
   const fields = Object.keys(rest);
   const items = fields.map((f) => `${f} = ?`);
@@ -66,9 +67,9 @@ export function deleteById(table: string, id: ID, db: Database, outFields?: stri
   );
 }
 
-export function delay(ms: number) {
-  return (value) =>
-    new Promise((resolve) => {
-      setTimeout(() => resolve(value), ms);
-    });
-}
+// export function delay(ms: number) {
+//   return (value) =>
+//     new Promise((resolve) => {
+//       setTimeout(() => resolve(value), ms);
+//     });
+// }

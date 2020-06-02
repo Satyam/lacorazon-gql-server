@@ -6,6 +6,7 @@ import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import { checkJwt } from './auth0';
 
+import { JSONData } from './resolvers/memory'
 export function stop() {
   process.exit(0);
 }

@@ -1,3 +1,6 @@
+import type { Venta } from '..'
+import { jsonContext } from '.'
+
 import {
   compareFecha,
   slice,
@@ -9,8 +12,8 @@ import {
 
 export default {
   Query: {
-    venta: (parent, { id }: { id: ID }, { data }: { data: JSONData }) => data.ventas[id],
-    ventas: (parent, args: Rango & { idVendedor: ID }, { data }: { data: JSONData }) =>
+    venta: (parent: unused, { id }: { id: ID }, { data }: jsonContext) => data.ventas[id],
+    ventas: (parent: unused, args: Rango & { idVendedor: ID }, { data }: jsonContext) =>
       slice(
         filterBy(
           Object.values(data.ventas),
@@ -21,11 +24,11 @@ export default {
       ),
   },
   Mutation: {
-    createVenta: (parent, args: Venta, { data }: { data: JSONData }) => createWithCuid(data.ventas, args),
-    updateVenta: (parent, args: Venta, { data }: { data: JSONData }) => updateById(data.ventas, args),
-    deleteVenta: (parent, { id }: { id: ID }, { data }: { data: JSONData }) => deleteWithId(data.ventas, id),
+    createVenta: (parent: unused, args: Venta, { data }: jsonContext) => createWithCuid(data.ventas, args),
+    updateVenta: (parent: unused, args: Venta, { data }: jsonContext) => updateById(data.ventas, args),
+    deleteVenta: (parent: unused, { id }: { id: ID }, { data }: jsonContext) => deleteWithId(data.ventas, id),
   },
   Venta: {
-    vendedor: (parent, args, { data }: { data: JSONData }) => data.users[parent.idVendedor],
+    vendedor: (parent: unused, args: unused, { data }: jsonContext) => data.users[parent.idVendedor],
   },
 };

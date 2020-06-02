@@ -1,8 +1,10 @@
+import type { sqlContext } from '.'
+
 export default {
   Query: {
-    consigna: (parent, { id }, { db }) =>
+    consigna: (parent: unused, { id }: { id: ID }, { db }: sqlContext) =>
       db.get('select * from Consigna where id = ?', [id]),
-    consignas: (parent, { offset = 0, limit, last }, { db }) => {
+    consignas: (parent: unused, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
       if (last) {
         return db
           .all(
@@ -26,9 +28,9 @@ export default {
     },
   },
   Consigna: {
-    vendedor: (parent, args, { db }) =>
+    vendedor: (parent: unused, args: unused, { db }: sqlContext) =>
       db.get('select * from Users where id = ?', [parent.idVendedor]),
-    distribuidor: (parent, args, { db }) =>
+    distribuidor: (parent: unused, args: unused, { db }: sqlContext) =>
       db.get('select * from Distribuidores where id = ?', [
         parent.idDistribuidor,
       ]),
