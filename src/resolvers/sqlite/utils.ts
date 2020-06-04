@@ -20,7 +20,7 @@ export function getById(table: string, id: ID, db: Database, fields?: string[]) 
 
 export function createWithAutoId(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
   const fields = Object.keys(args);
-  const vars = fields.map((f) => args[f]);
+  const vars = fields.map((f: keyof Fila) => args[f]);
   return db
     .run(
       `insert into ${table} (${fields.join(',')}) values (? ${',?'.repeat(
@@ -34,7 +34,7 @@ export function createWithAutoId(table: string, args: Partial<Fila>, db: Databas
 export function createWithCuid(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
   const id = cuid();
   const fields = Object.keys(args);
-  const vars = fields.map((f) => args[f]);
+  const vars = fields.map((f: keyof Fila) => args[f]);
   return db
     .run(
       `insert into ${table} (id, ${fields.join(',')}) values (? ${',?'.repeat(
@@ -48,8 +48,8 @@ export function createWithCuid(table: string, args: Partial<Fila>, db: Database,
 export function updateById(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
   const { id, ...rest } = args;
   const fields = Object.keys(rest);
-  const items = fields.map((f) => `${f} = ?`);
-  const vars = fields.map((f) => rest[f]);
+  const items = fields.map((f: keyof Omit<Fila, 'id'>) => `${f} = ?`);
+  const vars = fields.map((f: keyof Omit<Fila, 'id'>) => rest[f]);
   return db
     .run(`update ${table}  set ${items.join(',')}  where id = ?`, [...vars, id])
     .then((result) => {

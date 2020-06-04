@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import express, { Request } from 'express';
+import express, { Request, NextFunction } from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
@@ -11,6 +11,15 @@ export function stop() {
   process.exit(0);
 }
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: {
+        permissions: string[]
+      }
+    }
+  }
+}
 export function start() {
   return Promise.resolve()
     .then(() => {
@@ -83,6 +92,12 @@ export function start() {
         //   optionsSuccessStatus: 204,
         // }
       );
+      const errorHandler: express.ErrorRequestHandler = (err, req, res, next) => {
+        if (err.name === 'UnauthorizedError') {
+          // console.log('unauthorized');
+          next();
+        } else console.error(err);
+      }
       app.use(
         process.env.GRAPHQL,
         // (req, res, next) => {
@@ -95,12 +110,7 @@ export function start() {
         //   next();
         // },
         checkJwt,
-        (err, req, res, next) => {
-          if (err.name === 'UnauthorizedError') {
-            // console.log('unauthorized');
-            next();
-          } else console.error(err);
-        }
+        errorHandler
       );
 
       server.applyMiddleware({ app, path: process.env.GRAPHQL });

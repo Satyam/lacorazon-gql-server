@@ -46,7 +46,7 @@ export default {
   },
   Mutation: {
     createVenta: (parent: unused, args: Venta, { db }: sqlContext) =>
-      createWithAutoId(TABLE, { ...args, iva: args.iva ? 1 : 0 }, db),
+      createWithAutoId(TABLE, args, db),
     updateVenta: (parent: unused, args: Venta, { db }: sqlContext) =>
       updateById(TABLE, args, db),
     deleteVenta: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),

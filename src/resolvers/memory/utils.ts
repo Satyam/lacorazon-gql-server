@@ -45,8 +45,8 @@ export function filterBy(arr: any[], field: string, value: any) {
 
 export function pickFields(row: Partial<Fila>, fields: string[]) {
   if (fields && row) {
-    const ret = {};
-    fields.forEach((k) => {
+    const ret: Partial<Fila> = {};
+    fields.forEach((k: keyof Fila) => {
       ret[k] = row[k];
     });
     return ret;
@@ -95,7 +95,7 @@ export function updateById(table: Tabla, args: Partial<Fila>, outFields?: string
   if (typeof d === 'undefined') {
     throw new Error(`${id} not found`);
   }
-  Object.keys(rest).forEach((k: string) => {
+  Object.keys(rest).forEach((k: keyof Omit<Fila, 'id'>) => {
     d[k] = rest[k];
   });
   return pickFields(d, outFields);
