@@ -12,28 +12,28 @@ import {
 
 export default {
   Query: {
-    distribuidor: (parent: unused, { id }: { id: ID }, { data }: jsonContext) =>
+    distribuidor: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
       getById(data.distribuidores, id),
-    distribuidores: (parent: unused, rango: Rango, { data }: jsonContext) =>
+    distribuidores: (_: unused, rango: Rango, { data }: jsonContext) =>
       getAllLimitOffset(data.distribuidores, rango),
   },
   Mutation: {
-    createDistribuidor: (parent: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
+    createDistribuidor: (_: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
       createWithCuid(data.distribuidores, distribuidor),
-    updateDistribuidor: (parent: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
+    updateDistribuidor: (_: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
       updateById(data.distribuidores, distribuidor),
-    deleteDistribuidor: (parent: unused, { id }: { id: ID }, { data }: jsonContext) =>
+    deleteDistribuidor: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
       deleteWithId(data.distribuidores, id),
   },
   Distribuidor: {
-    consigna: (parent: Distribuidor, args: unused, { data }: jsonContext) =>
+    consigna: (parent: Distribuidor, rango: Rango, { data }: jsonContext) =>
       slice(
         Object.values(data.consigna)
           .filter((consigna) => consigna.idDistribuidor === parent.id)
           .sort(compareFecha),
-        args
+        rango
       ),
-    existencias: (parent: Distribuidor, args: unused, { data }: jsonContext) =>
+    existencias: (parent: Distribuidor, _: unused, { data }: jsonContext) =>
       Object.values(data.consigna).reduce(
         (existencias, c) =>
           existencias +
@@ -42,7 +42,7 @@ export default {
             : 0),
         0
       ),
-    entregados: (parent: Distribuidor, args: unused, { data }: jsonContext) =>
+    entregados: (parent: Distribuidor, _: unused, { data }: jsonContext) =>
       Object.values(data.consigna).reduce(
         (entregados, c) =>
           entregados + (c.idDistribuidor === parent.id ? c.entregados || 0 : 0),

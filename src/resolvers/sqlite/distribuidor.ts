@@ -13,15 +13,15 @@ const TABLE = 'Distribuidores';
 
 export default {
   Query: {
-    distribuidor: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db),
-    distribuidores: (parent: unused, rango: Rango, { db }: sqlContext) =>
+    distribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db),
+    distribuidores: (_: unused, rango: Rango, { db }: sqlContext) =>
       getAllLimitOffset(TABLE, rango, db),
   },
   Mutation: {
-    createDistribuidor: (parent: unused, distribuidor: Distribuidor, { db }: sqlContext) =>
+    createDistribuidor: (_: unused, distribuidor: Distribuidor, { db }: sqlContext) =>
       createWithCuid(TABLE, distribuidor, db),
-    updateDistribuidor: (parent: unused, distribuidor: Distribuidor, { db }: sqlContext) => updateById(TABLE, distribuidor, db),
-    deleteDistribuidor: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
+    updateDistribuidor: (_: unused, distribuidor: Distribuidor, { db }: sqlContext) => updateById(TABLE, distribuidor, db),
+    deleteDistribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
   },
   Distribuidor: {
     consigna: (parent: Distribuidor, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
@@ -53,7 +53,7 @@ export default {
         }
       );
     },
-    existencias: (parent: Distribuidor, args: unused, { db }: sqlContext) =>
+    existencias: (parent: Distribuidor, _: unused, { db }: sqlContext) =>
       db
         .get(
           `select 
@@ -64,7 +64,7 @@ export default {
           }
         )
         .then((row) => row.existencias),
-    entregados: (parent: Distribuidor, args: unused, { db }: sqlContext) =>
+    entregados: (parent: Distribuidor, _: unused, { db }: sqlContext) =>
       db
         .get(
           `select total(entregados) as entregados

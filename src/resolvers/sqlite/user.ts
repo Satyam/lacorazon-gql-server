@@ -14,18 +14,18 @@ const TABLE = 'Users';
 const safeFields = ['id', 'nombre', 'email'];
 export default {
   Query: {
-    user: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db, safeFields),
-    users: (parent: unused, rango: Rango, { db }: sqlContext) =>
+    user: (_: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db, safeFields),
+    users: (_: unused, rango: Rango, { db }: sqlContext) =>
       getAllLimitOffset(TABLE, rango, db, safeFields),
-    currentUser: (parent: unused, args: unused, { req }: sqlContext) => req.currentUser,
+    currentUser: (_: unused, _1: unused, { req }: sqlContext) => req.currentUser,
   },
   Mutation: {
-    createUser: (parent: unused, user: User, { db }: sqlContext) =>
+    createUser: (_: unused, user: User, { db }: sqlContext) =>
       createWithCuid(TABLE, user, db, safeFields),
-    updateUser: (parent: unused, user: User, { db }: sqlContext) => {
+    updateUser: (_: unused, user: User, { db }: sqlContext) => {
       return updateById(TABLE, user, db, safeFields);
     },
-    deleteUser: (parent: unused, { id }: { id: ID }, { db, permissions }: sqlContext) =>
+    deleteUser: (_: unused, { id }: { id: ID }, { db, permissions }: sqlContext) =>
       // permissions.includes('user:delete')
       //   ? deleteById(TABLE, id, db, safeFields)
       //   : new Error('unauthorized'),

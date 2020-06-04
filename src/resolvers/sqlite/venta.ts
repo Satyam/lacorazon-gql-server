@@ -6,9 +6,9 @@ const TABLE = 'Ventas';
 
 export default {
   Query: {
-    venta: (parent: unused, { id }: { id: ID }, { db }: sqlContext) =>
+    venta: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
       db.get('select * from Ventas where id = ?', [id]),
-    ventas: (parent: unused, { offset = 0, limit, last, idVendedor }: Rango & { idVendedor: ID }, { db }: sqlContext) => {
+    ventas: (_: unused, { offset = 0, limit, last, idVendedor }: Rango & { idVendedor: ID }, { db }: sqlContext) => {
       if (last) {
         return db
           .all(
@@ -45,14 +45,14 @@ export default {
     },
   },
   Mutation: {
-    createVenta: (parent: unused, venta: Venta, { db }: sqlContext) =>
+    createVenta: (_: unused, venta: Venta, { db }: sqlContext) =>
       createWithAutoId(TABLE, venta, db),
-    updateVenta: (parent: unused, venta: Venta, { db }: sqlContext) =>
+    updateVenta: (_: unused, venta: Venta, { db }: sqlContext) =>
       updateById(TABLE, venta, db),
-    deleteVenta: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
+    deleteVenta: (_: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
   },
   Venta: {
-    vendedor: (parent: Venta, args: unused, { db }: sqlContext) =>
+    vendedor: (parent: Venta, _: unused, { db }: sqlContext) =>
       db.get('select * from Users where id = ?', [parent.idVendedor]),
   },
 };
