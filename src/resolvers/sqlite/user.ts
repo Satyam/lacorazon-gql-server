@@ -26,9 +26,10 @@ export default {
       return updateById(TABLE, args, db, safeFields);
     },
     deleteUser: (parent: unused, { id }: { id: ID }, { db, permissions }: sqlContext) =>
-      permissions.includes('user:delete')
-        ? deleteById(TABLE, id, db, safeFields)
-        : new Error('unauthorized'),
+      // permissions.includes('user:delete')
+      //   ? deleteById(TABLE, id, db, safeFields)
+      //   : new Error('unauthorized'),
+      deleteById(TABLE, id, db, safeFields)
   },
   User: {
     ventas: (parent: User, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
