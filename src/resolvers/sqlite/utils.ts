@@ -28,10 +28,10 @@ export function createWithAutoId(nombreTabla: string, fila: Partial<Fila>, db: D
       )})`,
       [...vars]
     )
-    .then((response) => getById(nombreTabla, response.lastID, db, camposSalida));
+    .then((response) => response.lastID && getById(nombreTabla, response.lastID, db, camposSalida));
 }
 
-export function createWithCuid(nombreTabla: string, fila: Partial<Fila>, db: Database, camposSalida?: string[]) {
+export function createWithCuid(nombreTabla: string, fila: Partial<Omit<Fila, 'id'>>, db: Database, camposSalida?: string[]) {
   const id = cuid();
   const fields = Object.keys(fila);
   const vars = fields.map((f: keyof Fila) => fila[f]);
@@ -45,7 +45,7 @@ export function createWithCuid(nombreTabla: string, fila: Partial<Fila>, db: Dat
     .then(() => getById(nombreTabla, id, db, camposSalida));
 }
 
-export function updateById(nombreTabla: string, fila: Partial<Fila>, db: Database, camposSalida?: string[]) {
+export function updateById(nombreTabla: string, fila: Fila, db: Database, camposSalida?: string[]) {
   const { id, ...rest } = fila;
   const fields = Object.keys(rest);
   const items = fields.map((f: keyof Omit<Fila, 'id'>) => `${f} = ?`);

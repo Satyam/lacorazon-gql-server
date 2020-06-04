@@ -37,7 +37,7 @@ export function slice(
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
-export function pickFields(fila: Partial<Fila>, camposSalida: string[]) {
+export function pickFields(fila: Partial<Fila>, camposSalida?: string[]) {
   if (camposSalida && fila) {
     const ret: Partial<Fila> = {};
     camposSalida.forEach((k: keyof Fila) => {

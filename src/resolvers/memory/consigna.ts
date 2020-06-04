@@ -9,8 +9,8 @@ export default {
       slice(Object.values(data.consigna).sort(compareFecha), rango),
   },
   Consigna: {
-    vendedor: (parent: Consignacion, _: unused, { data }: jsonContext) => data.users[parent.idVendedor],
-    distribuidor: (parent: Consignacion, _: unused, { data }: jsonContext) =>
-      data.distribuidores[parent.idDistribuidor],
+    vendedor: (consignacion: Consignacion, _: unused, { data }: jsonContext) => consignacion.idVendedor && data.users[consignacion.idVendedor],
+    distribuidor: (consignacion: Consignacion, _: unused, { data }: jsonContext) =>
+      consignacion.idDistribuidor && data.distribuidores[consignacion.idDistribuidor],
   },
 };

@@ -103,3 +103,4 @@ export type Venta = {
 }
 
 export type Fila = Consignacion | Distribuidor | Salida | User | Venta
+

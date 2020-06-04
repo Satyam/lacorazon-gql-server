@@ -17,7 +17,7 @@ export default {
         Object.values(data.ventas).filter(fila => fila.idVendedor == criterio.idVendedor)
           .sort(compareFecha),
         criterio
-      ).filter((fila: Venta) => fila.idVendedor === criterio.idVendedor),
+      ),
   },
   Mutation: {
     createVenta: (_: unused, venta: Venta, { data }: jsonContext) => createWithCuid(data.ventas, venta),
@@ -25,6 +25,6 @@ export default {
     deleteVenta: (_: unused, { id }: { id: ID }, { data }: jsonContext) => deleteWithId(data.ventas, id),
   },
   Venta: {
-    vendedor: (venta: Venta, _: unused, { data }: jsonContext) => data.users[venta.idVendedor],
+    vendedor: (venta: Venta, _: unused, { data }: jsonContext) => venta.idVendedor && data.users[venta.idVendedor],
   },
 };
