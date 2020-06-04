@@ -14,14 +14,14 @@ export default {
   Query: {
     distribuidor: (parent: unused, { id }: { id: ID }, { data }: jsonContext) =>
       getById(data.distribuidores, id),
-    distribuidores: (parent: unused, args: Rango, { data }: jsonContext) =>
-      getAllLimitOffset(data.distribuidores, args),
+    distribuidores: (parent: unused, rango: Rango, { data }: jsonContext) =>
+      getAllLimitOffset(data.distribuidores, rango),
   },
   Mutation: {
-    createDistribuidor: (parent: unused, args: Distribuidor, { data }: jsonContext) =>
-      createWithCuid(data.distribuidores, args),
-    updateDistribuidor: (parent: unused, args: Distribuidor, { data }: jsonContext) =>
-      updateById(data.distribuidores, args),
+    createDistribuidor: (parent: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
+      createWithCuid(data.distribuidores, distribuidor),
+    updateDistribuidor: (parent: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
+      updateById(data.distribuidores, distribuidor),
     deleteDistribuidor: (parent: unused, { id }: { id: ID }, { data }: jsonContext) =>
       deleteWithId(data.distribuidores, id),
   },

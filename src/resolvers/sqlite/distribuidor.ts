@@ -14,13 +14,13 @@ const TABLE = 'Distribuidores';
 export default {
   Query: {
     distribuidor: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db),
-    distribuidores: (parent: unused, args: Rango, { db }: sqlContext) =>
-      getAllLimitOffset(TABLE, args, db),
+    distribuidores: (parent: unused, rango: Rango, { db }: sqlContext) =>
+      getAllLimitOffset(TABLE, rango, db),
   },
   Mutation: {
-    createDistribuidor: (parent: unused, args: Distribuidor, { db }: sqlContext) =>
-      createWithCuid(TABLE, args, db),
-    updateDistribuidor: (parent: unused, args: Distribuidor, { db }: sqlContext) => updateById(TABLE, args, db),
+    createDistribuidor: (parent: unused, distribuidor: Distribuidor, { db }: sqlContext) =>
+      createWithCuid(TABLE, distribuidor, db),
+    updateDistribuidor: (parent: unused, distribuidor: Distribuidor, { db }: sqlContext) => updateById(TABLE, distribuidor, db),
     deleteDistribuidor: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
   },
   Distribuidor: {

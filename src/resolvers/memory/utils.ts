@@ -1,6 +1,6 @@
 import cuid from 'cuid';
 import { Tabla } from '.'
-import { Fila } from '..'
+import { Fila, Venta } from '..'
 
 export function compareFecha(a: { fecha: Date, id: ID }, b: { fecha: Date, id: ID }) {
   if (a.fecha < b.fecha) return -1;
@@ -31,66 +31,60 @@ export function compareStringField(field: string) {
 }
 
 export function slice(
-  arr: any[],
+  arr: Fila[],
   { offset = 0, limit = Number.MAX_SAFE_INTEGER, last }: Rango
 ) {
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
-export function filterBy(arr: any[], field: string, value: any) {
-  return typeof value === 'undefined'
-    ? arr
-    : arr.filter((row) => row[field] === value);
-}
-
-export function pickFields(row: Partial<Fila>, fields: string[]) {
-  if (fields && row) {
+export function pickFields(fila: Partial<Fila>, camposSalida: string[]) {
+  if (camposSalida && fila) {
     const ret: Partial<Fila> = {};
-    fields.forEach((k: keyof Fila) => {
-      ret[k] = row[k];
+    camposSalida.forEach((k: keyof Fila) => {
+      ret[k] = fila[k];
     });
     return ret;
   }
-  return row;
+  return fila;
 }
 
-export function getById(table: Tabla, id: ID, fields?: string[]) {
-  return pickFields(table[id], fields);
+export function getById(tabla: Tabla, id: ID, camposSalida?: string[]) {
+  return pickFields(tabla[id], camposSalida);
 }
 
-export function getAllLimitOffset(table: Tabla, args: Rango, fields?: string[]) {
+export function getAllLimitOffset(tabla: Tabla, rango: Rango, camposSalida?: string[]) {
   const ret = slice(
-    Object.values(table).sort(compareStringField('nombre')),
-    args
+    Object.values(tabla).sort(compareStringField('nombre')),
+    rango
   );
-  if (fields) {
-    return ret.map((row) => pickFields(row, fields));
+  if (camposSalida) {
+    return ret.map((fila) => pickFields(fila, camposSalida));
   }
   return ret;
 }
 
-export function createWithCuid(table: Tabla, args: Fila, outFields?: string[]) {
+export function createWithCuid(tabla: Tabla, fila: Fila, camposSalida?: string[]) {
   const id = cuid();
-  if (id in table) {
+  if (id in tabla) {
     throw new Error(`Primary key id clash`);
   }
-  if ('nombre' in args) {
-    if (Object.values(table).find((d) => d.nombre === args.nombre)) {
-      throw new Error(`Duplicate nombre ${args.nombre} found`);
+  if ('nombre' in fila) {
+    if (Object.values(tabla).find((d) => d.nombre === fila.nombre)) {
+      throw new Error(`Duplicate nombre ${fila.nombre} found`);
     }
   }
   const d = {
     id,
-    ...args,
+    ...fila,
   };
   // eslint-disable-next-line no-param-reassign
-  table[id] = d;
-  return pickFields(d, outFields);
+  tabla[id] = d;
+  return pickFields(d, camposSalida);
 }
 
-export function updateById(table: Tabla, args: Partial<Fila>, outFields?: string[]) {
-  const { id, ...rest } = args;
-  const d: Fila = table[id];
+export function updateById(tabla: Tabla, fila: Partial<Fila>, camposSalida?: string[]) {
+  const { id, ...rest } = fila;
+  const d: Fila = tabla[id];
 
   if (typeof d === 'undefined') {
     throw new Error(`${id} not found`);
@@ -98,16 +92,16 @@ export function updateById(table: Tabla, args: Partial<Fila>, outFields?: string
   Object.keys(rest).forEach((k: keyof Omit<Fila, 'id'>) => {
     d[k] = rest[k];
   });
-  return pickFields(d, outFields);
+  return pickFields(d, camposSalida);
 }
 
-export function deleteWithId(table: Tabla, id: ID, outFields?: string[]) {
-  const d = table[id];
+export function deleteWithId(tabla: Tabla, id: ID, camposSalida?: string[]) {
+  const d = tabla[id];
 
   if (typeof d === 'undefined') {
     throw new Error(`${id} not found`);
   }
   // eslint-disable-next-line no-param-reassign
-  delete table[id];
-  return pickFields(d, outFields);
+  delete tabla[id];
+  return pickFields(d, camposSalida);
 }

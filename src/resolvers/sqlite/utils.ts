@@ -2,66 +2,66 @@ import cuid from 'cuid';
 import { Database } from 'sqlite';
 import { Fila } from '..'
 
-export function getAllLimitOffset(table: string, { offset = 0, limit }: { offset?: number, limit?: number }, db: Database, fields?: string[]) {
+export function getAllLimitOffset(nombreTabla: string, { offset = 0, limit }: { offset?: number, limit?: number }, db: Database, fields?: string[]) {
   const f = fields ? fields.join(',') : '*';
   if (limit) {
     return db.all(
-      `select ${f} from ${table} order by nombre limit ? offset ?`,
+      `select ${f} from ${nombreTabla} order by nombre limit ? offset ?`,
       [limit, offset]
     );
   }
-  return db.all(`select * from ${table} order by nombre`);
+  return db.all(`select * from ${nombreTabla} order by nombre`);
 }
 
-export function getById(table: string, id: ID, db: Database, fields?: string[]) {
+export function getById(nombreTabla: string, id: ID, db: Database, fields?: string[]) {
   const f = fields ? fields.join(',') : '*';
-  return db.get(`select ${f} from ${table} where id = ?`, [id]);
+  return db.get(`select ${f} from ${nombreTabla} where id = ?`, [id]);
 }
 
-export function createWithAutoId(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
-  const fields = Object.keys(args);
-  const vars = fields.map((f: keyof Fila) => args[f]);
+export function createWithAutoId(nombreTabla: string, fila: Partial<Fila>, db: Database, camposSalida?: string[]) {
+  const fields = Object.keys(fila);
+  const vars = fields.map((f: keyof Fila) => fila[f]);
   return db
     .run(
-      `insert into ${table} (${fields.join(',')}) values (? ${',?'.repeat(
+      `insert into ${nombreTabla} (${fields.join(',')}) values (? ${',?'.repeat(
         fields.length - 1
       )})`,
       [...vars]
     )
-    .then((response) => getById(table, response.lastID, db, outFields));
+    .then((response) => getById(nombreTabla, response.lastID, db, camposSalida));
 }
 
-export function createWithCuid(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
+export function createWithCuid(nombreTabla: string, fila: Partial<Fila>, db: Database, camposSalida?: string[]) {
   const id = cuid();
-  const fields = Object.keys(args);
-  const vars = fields.map((f: keyof Fila) => args[f]);
+  const fields = Object.keys(fila);
+  const vars = fields.map((f: keyof Fila) => fila[f]);
   return db
     .run(
-      `insert into ${table} (id, ${fields.join(',')}) values (? ${',?'.repeat(
+      `insert into ${nombreTabla} (id, ${fields.join(',')}) values (? ${',?'.repeat(
         fields.length
       )})`,
       [id, ...vars]
     )
-    .then(() => getById(table, id, db, outFields));
+    .then(() => getById(nombreTabla, id, db, camposSalida));
 }
 
-export function updateById(table: string, args: Partial<Fila>, db: Database, outFields?: string[]) {
-  const { id, ...rest } = args;
+export function updateById(nombreTabla: string, fila: Partial<Fila>, db: Database, camposSalida?: string[]) {
+  const { id, ...rest } = fila;
   const fields = Object.keys(rest);
   const items = fields.map((f: keyof Omit<Fila, 'id'>) => `${f} = ?`);
   const vars = fields.map((f: keyof Omit<Fila, 'id'>) => rest[f]);
   return db
-    .run(`update ${table}  set ${items.join(',')}  where id = ?`, [...vars, id])
+    .run(`update ${nombreTabla}  set ${items.join(',')}  where id = ?`, [...vars, id])
     .then((result) => {
-      if (result.changes !== 1) throw new Error(`${id} not found in ${table}`);
-      return getById(table, id, db, outFields);
+      if (result.changes !== 1) throw new Error(`${id} not found in ${nombreTabla}`);
+      return getById(nombreTabla, id, db, camposSalida);
     });
 }
 
-export function deleteById(table: string, id: ID, db: Database, outFields?: string[]) {
-  return getById(table, id, db, outFields).then((u) =>
-    db.run(`delete from ${table} where id = ?`, [id]).then((result) => {
-      if (result.changes !== 1) throw new Error(`${id} not found in ${table}`);
+export function deleteById(nombreTabla: string, id: ID, db: Database, camposSalida?: string[]) {
+  return getById(nombreTabla, id, db, camposSalida).then((u) =>
+    db.run(`delete from ${nombreTabla} where id = ?`, [id]).then((result) => {
+      if (result.changes !== 1) throw new Error(`${id} not found in ${nombreTabla}`);
       return u;
     })
   );

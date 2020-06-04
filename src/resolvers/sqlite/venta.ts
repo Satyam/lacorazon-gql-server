@@ -45,10 +45,10 @@ export default {
     },
   },
   Mutation: {
-    createVenta: (parent: unused, args: Venta, { db }: sqlContext) =>
-      createWithAutoId(TABLE, args, db),
-    updateVenta: (parent: unused, args: Venta, { db }: sqlContext) =>
-      updateById(TABLE, args, db),
+    createVenta: (parent: unused, venta: Venta, { db }: sqlContext) =>
+      createWithAutoId(TABLE, venta, db),
+    updateVenta: (parent: unused, venta: Venta, { db }: sqlContext) =>
+      updateById(TABLE, venta, db),
     deleteVenta: (parent: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
   },
   Venta: {

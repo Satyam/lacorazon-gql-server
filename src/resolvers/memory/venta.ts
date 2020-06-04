@@ -4,7 +4,6 @@ import { jsonContext } from '.'
 import {
   compareFecha,
   slice,
-  filterBy,
   createWithCuid,
   updateById,
   deleteWithId,
@@ -13,19 +12,16 @@ import {
 export default {
   Query: {
     venta: (parent: unused, { id }: { id: ID }, { data }: jsonContext) => data.ventas[id],
-    ventas: (parent: unused, args: Rango & { idVendedor: ID }, { data }: jsonContext) =>
+    ventas: (parent: unused, criterio: Rango & { idVendedor: ID }, { data }: jsonContext) =>
       slice(
-        filterBy(
-          Object.values(data.ventas),
-          'idVendedor',
-          args.idVendedor
-        ).sort(compareFecha),
-        args
-      ),
+        Object.values(data.ventas).filter(fila => fila.idVendedor == criterio.idVendedor)
+          .sort(compareFecha),
+        criterio
+      ).filter((fila: Venta) => fila.idVendedor === criterio.idVendedor),
   },
   Mutation: {
-    createVenta: (parent: unused, args: Venta, { data }: jsonContext) => createWithCuid(data.ventas, args),
-    updateVenta: (parent: unused, args: Venta, { data }: jsonContext) => updateById(data.ventas, args),
+    createVenta: (parent: unused, venta: Venta, { data }: jsonContext) => createWithCuid(data.ventas, venta),
+    updateVenta: (parent: unused, venta: Venta, { data }: jsonContext) => updateById(data.ventas, venta),
     deleteVenta: (parent: unused, { id }: { id: ID }, { data }: jsonContext) => deleteWithId(data.ventas, id),
   },
   Venta: {
