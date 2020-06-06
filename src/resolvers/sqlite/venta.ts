@@ -1,5 +1,5 @@
-import type { sqlContext } from '.'
-import { Venta } from '..'
+import type { sqlContext } from '.';
+import { Venta } from '..';
 import { createWithAutoId, updateById, deleteById } from './utils';
 
 const TABLE = 'Ventas';
@@ -8,7 +8,11 @@ export default {
   Query: {
     venta: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
       db.get('select * from Ventas where id = ?', [id]),
-    ventas: (_: unused, { offset = 0, limit, last, idVendedor }: Rango & { idVendedor: ID }, { db }: sqlContext) => {
+    ventas: (
+      _: unused,
+      { offset = 0, limit, last, idVendedor }: Rango & { idVendedor: ID },
+      { db }: sqlContext
+    ) => {
       if (last) {
         return db
           .all(
@@ -49,7 +53,8 @@ export default {
       createWithAutoId(TABLE, venta, db),
     updateVenta: (_: unused, venta: Venta, { db }: sqlContext) =>
       updateById(TABLE, venta, db),
-    deleteVenta: (_: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
+    deleteVenta: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
+      deleteById(TABLE, id, db),
   },
   Venta: {
     vendedor: (parent: Venta, _: unused, { db }: sqlContext) =>

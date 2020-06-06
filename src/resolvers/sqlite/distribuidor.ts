@@ -1,5 +1,5 @@
-import { Distribuidor } from '..'
-import type { sqlContext } from '.'
+import { Distribuidor } from '..';
+import type { sqlContext } from '.';
 
 import {
   getById,
@@ -13,18 +13,31 @@ const TABLE = 'Distribuidores';
 
 export default {
   Query: {
-    distribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db),
+    distribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
+      getById(TABLE, id, db),
     distribuidores: (_: unused, rango: Rango, { db }: sqlContext) =>
       getAllLimitOffset(TABLE, rango, db),
   },
   Mutation: {
-    createDistribuidor: (_: unused, distribuidor: Distribuidor, { db }: sqlContext) =>
-      createWithCuid(TABLE, distribuidor, db),
-    updateDistribuidor: (_: unused, distribuidor: Distribuidor, { db }: sqlContext) => updateById(TABLE, distribuidor, db),
-    deleteDistribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) => deleteById(TABLE, id, db),
+    createDistribuidor: (
+      _: unused,
+      distribuidor: Distribuidor,
+      { db }: sqlContext
+    ) => createWithCuid(TABLE, distribuidor, db),
+    updateDistribuidor: (
+      _: unused,
+      distribuidor: Distribuidor,
+      { db }: sqlContext
+    ) => updateById(TABLE, distribuidor, db),
+    deleteDistribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
+      deleteById(TABLE, id, db),
   },
   Distribuidor: {
-    consigna: (parent: Distribuidor, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
+    consigna: (
+      parent: Distribuidor,
+      { offset = 0, limit, last }: Rango,
+      { db }: sqlContext
+    ) => {
       if (last) {
         return db
           .all(

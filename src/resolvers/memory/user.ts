@@ -1,5 +1,5 @@
-import type { User } from '..'
-import { jsonContext } from '.'
+import type { User } from '..';
+import { jsonContext } from '.';
 
 import {
   compareFecha,
@@ -11,14 +11,16 @@ import {
   deleteWithId,
 } from './utils';
 
-const safeFields: Array<keyof Omit<User, 'password'>> = ['id', 'nombre', 'email'];
+const safeFields: Array<Partial<keyof User>> = ['id', 'nombre', 'email'];
 
 export default {
   Query: {
-    user: (_: unused, { id }: { id: ID }, { data }: jsonContext) => getById(data.users, id, safeFields),
+    user: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
+      getById(data.users, id, safeFields),
     users: (_: unused, rango: Rango, { data }: jsonContext) =>
       getAllLimitOffset(data.users, rango, safeFields),
-    currentUser: (_: unused, _1: unused, { req }: jsonContext) => req.currentUser,
+    currentUser: (_: unused, _1: unused, { req }: jsonContext) =>
+      req.currentUser,
   },
   Mutation: {
     createUser: (_: unused, user: User, { data }: jsonContext) =>

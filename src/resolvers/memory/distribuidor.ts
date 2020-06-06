@@ -1,5 +1,5 @@
-import type { Distribuidor } from '..'
-import { jsonContext } from '.'
+import type { Distribuidor } from '..';
+import { jsonContext } from '.';
 import {
   compareFecha,
   slice,
@@ -18,12 +18,21 @@ export default {
       getAllLimitOffset(data.distribuidores, rango),
   },
   Mutation: {
-    createDistribuidor: (_: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
-      createWithCuid(data.distribuidores, distribuidor),
-    updateDistribuidor: (_: unused, distribuidor: Distribuidor, { data }: jsonContext) =>
-      updateById(data.distribuidores, distribuidor),
-    deleteDistribuidor: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
-      deleteWithId(data.distribuidores, id),
+    createDistribuidor: (
+      _: unused,
+      distribuidor: Distribuidor,
+      { data }: jsonContext
+    ) => createWithCuid(data.distribuidores, distribuidor),
+    updateDistribuidor: (
+      _: unused,
+      distribuidor: Distribuidor,
+      { data }: jsonContext
+    ) => updateById(data.distribuidores, distribuidor),
+    deleteDistribuidor: (
+      _: unused,
+      { id }: { id: ID },
+      { data }: jsonContext
+    ) => deleteWithId(data.distribuidores, id),
   },
   Distribuidor: {
     consigna: (parent: Distribuidor, rango: Rango, { data }: jsonContext) =>

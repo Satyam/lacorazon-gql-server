@@ -1,8 +1,10 @@
 import cuid from 'cuid';
-import { Tabla } from '.'
-import { Fila, Venta } from '..'
+import { AnyFila } from '..';
 
-export function compareFecha(a: { fecha: Date, id: ID }, b: { fecha: Date, id: ID }) {
+export function compareFecha(
+  a: { fecha: Date; id: ID },
+  b: { fecha: Date; id: ID }
+) {
   if (a.fecha < b.fecha) return -1;
   if (a.fecha > b.fecha) return 1;
   if (a.id > b.id) return -1;
@@ -17,7 +19,7 @@ export function compareString(a: string, b: string) {
 }
 
 export function compareStringField(field: string) {
-  return (a: { [field: string]: string }, b: { [field: string]: string }) => {
+  return (a: { [field: string]: any }, b: { [field: string]: any }) => {
     const fa = a[field];
     const fb = b[field];
     if (fa < fb) {
@@ -30,17 +32,20 @@ export function compareStringField(field: string) {
   };
 }
 
-export function slice(
-  arr: Fila[],
+export function slice<R>(
+  arr: R[],
   { offset = 0, limit = Number.MAX_SAFE_INTEGER, last }: Rango
-) {
+): R[] {
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
-export function pickFields(fila: Partial<Fila>, camposSalida?: string[]) {
+export function pickFields<R extends AnyFila, K extends keyof R>(
+  fila: R,
+  camposSalida?: K[]
+): Partial<R> {
   if (camposSalida && fila) {
-    const ret: Partial<Fila> = {};
-    camposSalida.forEach((k: keyof Fila) => {
+    const ret: Partial<R> = {};
+    camposSalida.forEach((k) => {
       ret[k] = fila[k];
     });
     return ret;
@@ -48,11 +53,19 @@ export function pickFields(fila: Partial<Fila>, camposSalida?: string[]) {
   return fila;
 }
 
-export function getById(tabla: Tabla, id: ID, camposSalida?: string[]) {
+export function getById<R extends AnyFila, K extends keyof R>(
+  tabla: { [id: string]: R },
+  id: ID,
+  camposSalida?: K[]
+): Partial<R> {
   return pickFields(tabla[id], camposSalida);
 }
 
-export function getAllLimitOffset(tabla: Tabla, rango: Rango, camposSalida?: string[]) {
+export function getAllLimitOffset<R extends AnyFila, K extends keyof R>(
+  tabla: { [id: string]: R },
+  rango: Rango,
+  camposSalida?: K[]
+): Array<Partial<R>> {
   const ret = slice(
     Object.values(tabla).sort(compareStringField('nombre')),
     rango
@@ -63,39 +76,50 @@ export function getAllLimitOffset(tabla: Tabla, rango: Rango, camposSalida?: str
   return ret;
 }
 
-export function createWithCuid(tabla: Tabla, fila: Fila, camposSalida?: string[]) {
+export function createWithCuid<R extends AnyFila, K extends keyof R>(
+  tabla: { [id: string]: R },
+  fila: Partial<R>,
+  camposSalida?: K[]
+): Partial<R> {
   const id = cuid();
   if (id in tabla) {
     throw new Error(`Primary key id clash`);
   }
-  if ('nombre' in fila) {
-    if (Object.values(tabla).find((d) => d.nombre === fila.nombre)) {
-      throw new Error(`Duplicate nombre ${fila.nombre} found`);
-    }
+  if (
+    Object.values(tabla).find(
+      (d) => 'nombre' in d && 'nombre' in fila && d.nombre === fila.nombre
+    )
+  ) {
+    throw new Error(`Duplicate nombre ${fila.nombre} found`);
   }
   const d = {
     id,
     ...fila,
-  };
+  } as R;
   // eslint-disable-next-line no-param-reassign
   tabla[id] = d;
   return pickFields(d, camposSalida);
 }
 
-export function updateById(tabla: Tabla, fila: Partial<Fila>, camposSalida?: string[]) {
+export function updateById<R extends AnyFila, K extends keyof R>(
+  tabla: { [id: string]: R },
+  fila: PartialExcept<R, 'id'>,
+  camposSalida?: K[]
+): Partial<R> {
   const { id, ...rest } = fila;
-  const d: Fila = tabla[id];
-
-  if (typeof d === 'undefined') {
-    throw new Error(`${id} not found`);
-  }
-  Object.keys(rest).forEach((k: keyof Omit<Fila, 'id'>) => {
-    d[k] = rest[k];
-  });
-  return pickFields(d, camposSalida);
+  const d = tabla[id];
+  tabla[id] = {
+    ...d,
+    ...rest,
+  };
+  return pickFields(tabla[id], camposSalida);
 }
 
-export function deleteWithId(tabla: Tabla, id: ID, camposSalida?: string[]) {
+export function deleteWithId<R extends AnyFila, K extends keyof R>(
+  tabla: { [id: string]: R },
+  id: ID,
+  camposSalida?: K[]
+): Partial<R> {
   const d = tabla[id];
 
   if (typeof d === 'undefined') {

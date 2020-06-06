@@ -1,5 +1,5 @@
-import type { sqlContext } from '.'
-import { User } from '..'
+import type { sqlContext } from '.';
+import { User } from '..';
 import {
   getById,
   getAllLimitOffset,
@@ -7,17 +7,18 @@ import {
   updateById,
   deleteById,
 } from './utils';
-import { sqlite3 } from 'sqlite3';
 
 const TABLE = 'Users';
 
-const safeFields = ['id', 'nombre', 'email'];
+const safeFields: Array<Partial<keyof User>> = ['id', 'nombre', 'email'];
 export default {
   Query: {
-    user: (_: unused, { id }: { id: ID }, { db }: sqlContext) => getById(TABLE, id, db, safeFields),
+    user: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
+      getById(TABLE, id, db, safeFields),
     users: (_: unused, rango: Rango, { db }: sqlContext) =>
       getAllLimitOffset(TABLE, rango, db, safeFields),
-    currentUser: (_: unused, _1: unused, { req }: sqlContext) => req.currentUser,
+    currentUser: (_: unused, _1: unused, { req }: sqlContext) =>
+      req.currentUser,
   },
   Mutation: {
     createUser: (_: unused, user: User, { db }: sqlContext) =>
@@ -25,14 +26,22 @@ export default {
     updateUser: (_: unused, user: User, { db }: sqlContext) => {
       return updateById(TABLE, user, db, safeFields);
     },
-    deleteUser: (_: unused, { id }: { id: ID }, { db, permissions }: sqlContext) =>
+    deleteUser: (
+      _: unused,
+      { id }: { id: ID },
+      { db, permissions }: sqlContext
+    ) =>
       // permissions.includes('user:delete')
       //   ? deleteById(TABLE, id, db, safeFields)
       //   : new Error('unauthorized'),
-      deleteById(TABLE, id, db, safeFields)
+      deleteById(TABLE, id, db, safeFields),
   },
   User: {
-    ventas: (parent: User, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
+    ventas: (
+      parent: User,
+      { offset = 0, limit, last }: Rango,
+      { db }: sqlContext
+    ) => {
       if (last) {
         return db
           .all(

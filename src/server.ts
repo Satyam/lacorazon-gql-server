@@ -6,7 +6,7 @@ import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
 import { checkJwt } from './auth0';
 
-import { JSONData } from './resolvers/memory'
+import { JSONData } from './resolvers/memory';
 export function stop() {
   process.exit(0);
 }
@@ -15,8 +15,8 @@ declare global {
   namespace Express {
     interface Request {
       user: {
-        permissions: string[]
-      }
+        permissions: string[];
+      };
     }
   }
 }
@@ -30,33 +30,33 @@ export function start() {
             console.log('Start with SQLite');
             const sqliteFile = process.env.SQLITE_FILE;
             if (sqliteFile) {
-              return import('sqlite')
-                .then(sqlite => import('./resolvers/sqlite')
-                  .then(resolvers => import('sqlite3')
-                    .then(sqlite3 =>
-                      sqlite
-                        .open({
-                          filename: sqliteFile,
-                          driver: sqlite3.Database,
-                        })
-                        .then(
-                          (db) =>
-                            new ApolloServer({
-                              typeDefs: schema,
-                              resolvers: resolvers.default,
-                              context: ({ req }) => ({
-                                db,
-                                // @ts-ignore
-                                permissions: (req.user && req.user.permissions) || [],
-                              }),
-                            })
-                        )))
-
+              return import('sqlite').then((sqlite) =>
+                import('./resolvers/sqlite').then((resolvers) =>
+                  import('sqlite3').then((sqlite3) =>
+                    sqlite
+                      .open({
+                        filename: sqliteFile,
+                        driver: sqlite3.Database,
+                      })
+                      .then(
+                        (db) =>
+                          new ApolloServer({
+                            typeDefs: schema,
+                            resolvers: resolvers.default,
+                            context: ({ req }) => ({
+                              db,
+                              // @ts-ignore
+                              permissions:
+                                (req.user && req.user.permissions) || [],
+                            }),
+                          })
+                      )
+                  )
                 )
+              );
             } else {
-              console.error('Environment variable SQLITE_FILE is required')
+              console.error('Environment variable SQLITE_FILE is required');
               process.exit(1);
-
             }
           }
 
@@ -64,10 +64,10 @@ export function start() {
             console.log('Start with JSON');
             const jsonFile = process.env.JSON_FILE;
             if (jsonFile) {
-              return import('./resolvers/memory')
-                .then(resolvers => import('fs-extra')
-                  .then(fs => fs.readJson(jsonFile)
-                    .then((data: JSONData) =>
+              return import('./resolvers/memory').then((resolvers) =>
+                import('fs-extra').then((fs) =>
+                  fs.readJson(jsonFile).then(
+                    (data: JSONData) =>
                       new ApolloServer({
                         typeDefs: schema,
                         resolvers: resolvers.default,
@@ -76,11 +76,13 @@ export function start() {
                           // @ts-ignore
                           permissions: (req.user && req.user.permissions) || [],
                         }),
-                      }))))
+                      })
+                  )
+                )
+              );
             } else {
-              console.error('Environment variable JSON_FILE is required')
+              console.error('Environment variable JSON_FILE is required');
               process.exit(1);
-
             }
 
           default:
@@ -88,7 +90,7 @@ export function start() {
             return null;
         }
       } else {
-        console.error('Environment variable DATA_SOURCE is required')
+        console.error('Environment variable DATA_SOURCE is required');
         process.exit(1);
       }
     })
@@ -113,12 +115,17 @@ export function start() {
           //   optionsSuccessStatus: 204,
           // }
         );
-        const errorHandler: express.ErrorRequestHandler = (err, req, res, next) => {
+        const errorHandler: express.ErrorRequestHandler = (
+          err,
+          req,
+          res,
+          next
+        ) => {
           if (err.name === 'UnauthorizedError') {
             // console.log('unauthorized');
             next();
           } else console.error(err);
-        }
+        };
         app.use(
           process.env.GRAPHQL || '/graphql',
           // (req, res, next) => {
@@ -149,7 +156,7 @@ export function start() {
         });
       } else {
         console.error('Something bad happend, see previous messages');
-        process.exit(1)
+        process.exit(1);
       }
     });
 }

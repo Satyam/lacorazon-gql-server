@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = `${process.env.HOST}:${process.env.SERVER_PORT || 8000}${
   process.env.GRAPHQL
-  }`;
+}`;
 
 export default function gqlFetch(query) {
   return (variables, config) =>

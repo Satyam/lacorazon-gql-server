@@ -15,18 +15,18 @@ CREATE TABLE Consigna (
 */
 
 export type Consignacion = {
-  id: ID,
-  fecha: Date,
-  idDistribuidor?: ID,
-  idVendedor?: ID,
-  entregados?: number,
-  porcentaje?: number,
-  vendidos?: number,
-  devueltos?: number,
-  cobrado?: number,
-  iva?: boolean,
-  comentarios?: string
-}
+  id: ID;
+  fecha: Date;
+  idDistribuidor?: ID;
+  idVendedor?: ID;
+  entregados?: number;
+  porcentaje?: number;
+  vendidos?: number;
+  devueltos?: number;
+  cobrado?: number;
+  iva?: boolean;
+  comentarios?: string;
+};
 
 /*
 CREATE TABLE Distribuidores (
@@ -41,15 +41,14 @@ CREATE TABLE Distribuidores (
   */
 
 export type Distribuidor = {
-  id: ID,
-  nombre: string,
-  localidad?: string,
-  contacto?: string,
-  telefono?: string,
-  email?: string,
-  direccion?: string
-}
-
+  id: ID;
+  nombre: string;
+  localidad?: string;
+  contacto?: string;
+  telefono?: string;
+  email?: string;
+  direccion?: string;
+};
 
 /*
 CREATE TABLE Salidas (
@@ -60,12 +59,11 @@ CREATE TABLE Salidas (
 )
 */
 export type Salida = {
-  id: ID,
-  fecha: Date,
-  concepto?: string,
-  importe?: number
-}
-
+  id: ID;
+  fecha: Date;
+  concepto?: string;
+  importe?: number;
+};
 
 /*
  CREATE TABLE Users (
@@ -76,11 +74,11 @@ export type Salida = {
  )
  */
 export type User = {
-  id: ID,
-  nombre: string,
-  email?: string,
-  password?: string
-}
+  id: ID;
+  nombre: string;
+  email?: string;
+  password?: string;
+};
 /*
  CREATE TABLE Ventas (
    id integer primary key,
@@ -93,14 +91,18 @@ export type User = {
  )
 */
 export type Venta = {
-  id: ID,
-  concepto?: string,
-  fecha: Date,
-  idVendedor?: ID,
-  cantidad?: number,
-  precioUnitario?: number,
-  iva?: boolean
-}
+  id: ID;
+  concepto?: string;
+  fecha: Date;
+  idVendedor?: ID;
+  cantidad?: number;
+  precioUnitario?: number;
+  iva?: boolean;
+};
 
-export type Fila = Consignacion | Distribuidor | Salida | User | Venta
+export type Fila = Consignacion | Distribuidor | Salida | User | Venta;
 
+export type AnyFila = PartialExcept<
+  Consignacion & Distribuidor & Salida & User & Venta & { [key: string]: any },
+  'id'
+>;

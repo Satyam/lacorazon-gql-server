@@ -1,10 +1,14 @@
-import type { sqlContext } from '.'
-import { Consignacion } from '..'
+import type { sqlContext } from '.';
+import { Consignacion } from '..';
 export default {
   Query: {
     consigna: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
       db.get('select * from Consigna where id = ?', [id]),
-    consignas: (_: unused, { offset = 0, limit, last }: Rango, { db }: sqlContext) => {
+    consignas: (
+      _: unused,
+      { offset = 0, limit, last }: Rango,
+      { db }: sqlContext
+    ) => {
       if (last) {
         return db
           .all(
