@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import express, { Request, NextFunction } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 
@@ -45,7 +45,6 @@ export function start() {
                             resolvers: resolvers.default,
                             context: ({ req }) => ({
                               db,
-                              // @ts-ignore
                               permissions:
                                 (req.user && req.user.permissions) || [],
                             }),
@@ -73,7 +72,6 @@ export function start() {
                         resolvers: resolvers.default,
                         context: ({ req }) => ({
                           data,
-                          // @ts-ignore
                           permissions: (req.user && req.user.permissions) || [],
                         }),
                       })
@@ -96,7 +94,7 @@ export function start() {
     })
     .then((server) => {
       if (server) {
-        const app = express();
+        const app: Express = express();
         // app.use((req, res, next) => {
         //   res.header('Access-Control-Allow-Origin', '*');
         //   res.header(
@@ -115,17 +113,6 @@ export function start() {
           //   optionsSuccessStatus: 204,
           // }
         );
-        const errorHandler: express.ErrorRequestHandler = (
-          err,
-          req,
-          res,
-          next
-        ) => {
-          if (err.name === 'UnauthorizedError') {
-            // console.log('unauthorized');
-            next();
-          } else console.error(err);
-        };
         app.use(
           process.env.GRAPHQL || '/graphql',
           // (req, res, next) => {
@@ -138,7 +125,12 @@ export function start() {
           //   next();
           // },
           checkJwt,
-          errorHandler
+          (err: any, req: Request, res: Response, next: NextFunction) => {
+            if (err.name === 'UnauthorizedError') {
+              // console.log('unauthorized');
+              next();
+            } else console.error(err);
+          }
         );
 
         server.applyMiddleware({ app, path: process.env.GRAPHQL });
