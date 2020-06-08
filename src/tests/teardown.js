@@ -1,3 +1,3 @@
-import { stop } from '../server';
-
-module.exports = () => stop();
+module.exports = () => {
+  global.serverProcess.kill();
+};

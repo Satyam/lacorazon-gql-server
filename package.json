@@ -8,7 +8,7 @@
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "test:json": "DATA_SOURCE=JSON npm t",
     "test:sqlite": "DATA_SOURCE=SQLite npm t",
-    "start": "nodemon --exec node build/index.js",
+    "start": "nodemon --exec ts-node --files src/index.ts",
     "server": "node build/index.js",
     "server:debug": "node --inspect-brk build/index.js",
     "start:json": "DATA_SOURCE=JSON npm start",
@@ -46,6 +46,7 @@
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   },
   "dependencies": {
@@ -66,15 +67,5 @@
     "ms": "^2.1.2",
     "sqlite": "^4.0.10",
     "sqlite3": "^4.2.0"
-  },
-  "jest": {
-    "testMatch": [
-      "**/src/tests/*.test.js"
-    ],
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "globalSetup": "./build/tests/setup.js",
-    "globalTeardown": "./build/tests/teardown.js"
   }
 }
