@@ -1,5 +1,5 @@
-const jwt = require('express-jwt');
-const jwksRsa = require('jwks-rsa');
+import jwt from 'express-jwt';
+import jwksRsa from 'jwks-rsa';
 
 const authConfig = {
   domain: 'dev-5ev0q6ua.eu.auth0.com',
