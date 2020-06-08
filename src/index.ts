@@ -1,24 +1,142 @@
 import 'dotenv/config';
-import { start, stop } from './server';
+import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import { ApolloServer } from 'apollo-server-express';
 
-async function startup() {
-  try {
-    await start();
-  } catch (err) {
-    console.error(err);
+import schema from './schema';
+import { checkJwt } from './auth0';
+
+import { JSONData } from './resolvers/memory';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: {
+        permissions: string[];
+      };
+    }
+  }
+}
+
+async function getApolloServer(): Promise<ApolloServer | null> {
+  const dataSource = process.env.DATA_SOURCE;
+  if (dataSource) {
+    switch (dataSource.toLowerCase()) {
+      case 'sqlite':
+        {
+          console.log('Start with SQLite');
+          const sqliteFile = process.env.SQLITE_FILE;
+          if (sqliteFile) {
+            const sqlite = await import('sqlite');
+            const resolvers = await import('./resolvers/sqlite');
+            const sqlite3 = await import('sqlite3');
+            const db = await sqlite.open({
+              filename: sqliteFile,
+              driver: sqlite3.Database,
+            });
+            return new ApolloServer({
+              typeDefs: schema,
+              resolvers: resolvers.default,
+              context: ({ req }) => ({
+                db,
+                permissions: (req.user && req.user.permissions) || [],
+              }),
+            });
+          } else {
+            console.error('Environment variable SQLITE_FILE is required');
+            process.exit(1);
+          }
+        }
+        break;
+      case 'json':
+        console.log('Start with JSON');
+        const jsonFile = process.env.JSON_FILE;
+        if (jsonFile) {
+          const resolvers = await import('./resolvers/memory');
+          const fs = await import('fs-extra');
+          const data: JSONData = await fs.readJson(jsonFile);
+          return new ApolloServer({
+            typeDefs: schema,
+            resolvers: resolvers.default,
+            context: ({ req }) => ({
+              data,
+              permissions: (req.user && req.user.permissions) || [],
+            }),
+          });
+        } else {
+          console.error('Environment variable JSON_FILE is required');
+          process.exit(1);
+        }
+        break;
+      default:
+        console.error('No data source given');
+        return null;
+    }
+  } else {
+    console.error('Environment variable DATA_SOURCE is required');
     process.exit(1);
   }
 }
 
-startup();
+async function start() {
+  const server = await getApolloServer();
+  if (server) {
+    const app: Express = express();
 
-const shutdown = async () => {
-  await stop();
-  process.exit();
-};
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+    // app.use((req, res, next) => {
+    //   res.header('Access-Control-Allow-Origin', '*');
+    //   res.header(
+    //     'Access-Control-Allow-Headers',
+    //     'Origin, X-Requested-With, Content-Type, Accept'
+    //   );
+    //   next();
+    // });
+    app.use(
+      cors()
+      //   {
+      //   origin: '*',
+      //   credentials: true, // <-- REQUIRED backend setting
+      //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      //   preflightContinue: false,
+      //   optionsSuccessStatus: 204,
+      // }
+    );
 
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason);
-});
+    app.use(
+      process.env.GRAPHQL || '/graphql',
+      // (req, res, next) => {
+      //   if (
+      //     req.headers.authorization &&
+      //     req.headers.authorization.split(' ')[0] === 'Bearer'
+      //   ) {
+      //     console.log(req.headers.authorization.split(' ')[1]);
+      //   }
+      //   next();
+      // },
+      checkJwt,
+      (err: any, req: Request, res: Response, next: NextFunction) => {
+        if (err.name === 'UnauthorizedError') {
+          // console.log('unauthorized');
+          next();
+        } else console.error(err);
+      }
+    );
+
+    app.get('/kill', () => process.exit());
+
+    server.applyMiddleware({ app, path: process.env.GRAPHQL });
+
+    const PORT = process.env.SERVER_PORT || 8000;
+
+    app.listen({ port: PORT }, () => {
+      console.log(
+        `Apollo Server on ${process.env.HOST}:${PORT}${process.env.GRAPHQL}`
+      );
+    });
+  } else {
+    console.error('Something bad happend, see previous messages');
+    process.exit(1);
+  }
+}
+
+start();
