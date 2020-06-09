@@ -251,7 +251,7 @@ describe('distribuidor', () => {
       }));
   });
   describe('Mutations', () => {
-    let id;
+    let id: ID;
     const distribuidor = {
       nombre: 'pepe',
       email: 'pepe@correo.com',

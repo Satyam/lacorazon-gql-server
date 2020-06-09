@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import gqlFetch from './gqlfetch';
 
+import type { User } from '../resolvers';
 dotenv.config({ path: '.env.tests' });
 dotenv.config();
 
@@ -177,7 +178,7 @@ describe('user', () => {
       }));
   });
   describe('Mutations', () => {
-    let id;
+    let id: ID;
     const usuario = {
       nombre: 'pepe',
       email: 'pepe@correo.com',
@@ -198,7 +199,7 @@ describe('user', () => {
         return create(usuario)
           .then((result) => {
             expect(result.data.errors).toBeUndefined();
-            const u = result.data.data.createUser;
+            const u: User = result.data.data.createUser;
             expect(u.nombre).toBe(usuario.nombre);
             expect(u.email).toBe(usuario.email);
             // eslint-disable-next-line prefer-destructuring
@@ -236,34 +237,31 @@ describe('user', () => {
         logout
       }`);
       const jwtMatch = /^jwt=([^;]*)/;
-
+      const jwtSignature = process.env.JWT_SIGNATURE || '';
       test('pepe with correct password', () =>
         login({ nombre: usuario.nombre, password: usuario.password }).then(
           (result) => {
             expect(result.data.errors).toBeUndefined();
             // eslint-disable-next-line no-shadow
-            const { login } = result.data.data;
+            const { login }: { login: User } = result.data.data;
             expect(login.nombre).toBe(usuario.nombre);
             expect(login.email).toBe(usuario.email);
-            const token = result.headers['set-cookie'].find((ck) =>
+            const token = result.headers['set-cookie'].find((ck: string) =>
               jwtMatch.test(ck)
             );
             const m = jwtMatch.exec(token);
             expect(m).not.toBeNull();
-            const webToken = m[1];
-            const user = jwt.verify(webToken, process.env.JWT_SIGNATURE);
-            expect(user.nombre).toBe(usuario.nombre);
-            expect(user.email).toBe(usuario.email);
+            const webToken = m ? m[1] : '';
+            const user = jwt.verify(webToken, jwtSignature);
+            expect((<User>user).nombre).toBe(usuario.nombre);
+            expect((<User>user).email).toBe(usuario.email);
           }
         ));
 
       test('current user', () =>
         currentUser(null, {
           headers: {
-            Cookie: `jwt=${jwt.sign(
-              usuario,
-              process.env.JWT_SIGNATURE
-            )};HttpOnly`,
+            Cookie: `jwt=${jwt.sign(usuario, jwtSignature)};HttpOnly`,
           },
         }).then((result) => {
           expect(result.data.errors).toBeUndefined();
@@ -276,20 +274,22 @@ describe('user', () => {
         logout(null).then((result) => {
           expect(result.data.errors).toBeUndefined();
           expect(result.data.data.logout).toBeNull();
-          const token = result.headers['set-cookie'].find((ck) =>
+          const token = result.headers['set-cookie'].find((ck: string) =>
             jwtMatch.test(ck)
           );
           const m = jwtMatch.exec(token);
           expect(m).not.toBeNull();
-          expect(m[1]).toBeFalsy();
-          const exp = token
-            .split(';')
-            .find((opt) => opt.trim().startsWith('expires='));
-          expect(exp).not.toBeUndefined();
+          if (m) {
+            expect(m[1]).toBeFalsy();
+            const exp = token
+              .split(';')
+              .find((opt: string) => opt.trim().startsWith('expires='));
+            expect(exp).not.toBeUndefined();
 
-          expect(new Date(exp.split('=')[1]).toISOString()).toBe(
-            '1970-01-01T00:00:00.000Z'
-          );
+            expect(new Date(exp.split('=')[1]).toISOString()).toBe(
+              '1970-01-01T00:00:00.000Z'
+            );
+          }
         }));
       test('pepe with wrong password', () =>
         login({ nombre: usuario.nombre, password: 'xxxx' }).then((result) => {
