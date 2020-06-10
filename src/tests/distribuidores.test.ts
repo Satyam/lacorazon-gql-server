@@ -1,7 +1,8 @@
 import gqlFetch from './gqlfetch';
+import { Distribuidor, Consignacion } from '../resolvers';
 
 describe('distribuidor', () => {
-  const distribuidorQuery = gqlFetch(`
+  const distribuidorQuery = gqlFetch<{ distribuidor: Distribuidor }>(`
     query ($id: ID!) {
       distribuidor(id:$id) {
         nombre
@@ -48,7 +49,9 @@ describe('distribuidor', () => {
       }));
   });
   describe('single distribuidor with stock', () => {
-    const query = gqlFetch(`
+    const query = gqlFetch<{
+      distribuidor: Distribuidor & { consigna: Consignacion[] };
+    }>(`
     query ($id: ID!, $last:Int, $offset: Int, $limit: Int ) {
       distribuidor(id:$id ) {
         nombre
@@ -179,7 +182,7 @@ describe('distribuidor', () => {
       }));
   });
   describe('distribuidores', () => {
-    const query = gqlFetch(`
+    const query = gqlFetch<{ distribuidores: Distribuidor[] }>(`
     query($offset: Int, $limit: Int )  {
       distribuidores(offset: $offset, limit: $limit ) {
         nombre
@@ -258,7 +261,9 @@ describe('distribuidor', () => {
     };
     const otroNombre = 'pepito';
     describe('create', () => {
-      const create = gqlFetch(`mutation ($nombre: String!, $email: String) {
+      const create = gqlFetch<{
+        createDistribuidor: Distribuidor;
+      }>(`mutation ($nombre: String!, $email: String) {
       createDistribuidor(nombre: $nombre, email: $email) {
         id
         nombre
@@ -289,7 +294,9 @@ describe('distribuidor', () => {
         }));
     });
     describe('update', () => {
-      const update = gqlFetch(`mutation ($id: ID!, $nombre: String, $email: String) {
+      const update = gqlFetch<{
+        updateDistribuidor: Distribuidor;
+      }>(`mutation ($id: ID!, $nombre: String, $email: String) {
         updateDistribuidor(id: $id, nombre: $nombre, email: $email) {
           id
           nombre
@@ -323,7 +330,9 @@ describe('distribuidor', () => {
         }));
     });
     describe('delete', () => {
-      const del = gqlFetch(`mutation ($id: ID!) {
+      const del = gqlFetch<{
+        deleteDistribuidor: Distribuidor;
+      }>(`mutation ($id: ID!) {
         deleteDistribuidor(id: $id) {
           id
           nombre

@@ -1,8 +1,9 @@
 import gqlFetch from './gqlfetch';
+import { Venta } from '../resolvers';
 
 describe('Ventas', () => {
   describe('ventas', () => {
-    const query = gqlFetch(`
+    const query = gqlFetch<{ ventas: Venta[] }>(`
     query ($offset: Int, $limit: Int, $last: Int, $idVendedor: ID) {
       ventas(offset: $offset, limit: $limit, last: $last, idVendedor: $idVendedor) {
         concepto
@@ -20,7 +21,8 @@ describe('Ventas', () => {
         expect(ventas.length).toBe(8);
         expect(
           ventas.reduce(
-            (anterior, v) => (v.fecha >= anterior ? v.fecha : 'xxx'),
+            (anterior: string | Date, v: Venta): string | Date =>
+              v.fecha >= anterior ? v.fecha : 'xxx',
             ''
           )
         ).not.toBe('xxx');
@@ -32,7 +34,8 @@ describe('Ventas', () => {
         expect(ventas.length).toBe(3);
         expect(
           ventas.reduce(
-            (anterior, v) => (v.fecha >= anterior ? v.fecha : 'xxx'),
+            (anterior: string | Date, v: Venta): string | Date =>
+              v.fecha >= anterior ? v.fecha : 'xxx',
             ''
           )
         ).not.toBe('xxx');
@@ -69,7 +72,8 @@ describe('Ventas', () => {
         expect(ventas.length).toBe(2);
         expect(
           ventas.reduce(
-            (anterior, v) => (v.fecha >= anterior ? v.fecha : 'xxx'),
+            (anterior: string | Date, v: Venta): string | Date =>
+              v.fecha >= anterior ? v.fecha : 'xxx',
             ''
           )
         ).not.toBe('xxx');
@@ -159,9 +163,9 @@ describe('Ventas', () => {
       }));
   });
   describe('single Venta', () => {
-    let ventaId;
+    let ventaId: ID;
     beforeAll(() =>
-      gqlFetch(`query {
+      gqlFetch<{ ventas: Venta[] }>(`query {
         ventas(last: 1) {
           id
         }
@@ -169,7 +173,7 @@ describe('Ventas', () => {
         ventaId = result.data.data.ventas[0].id;
       })
     );
-    const query = gqlFetch(`
+    const query = gqlFetch<{ venta: Venta }>(`
     query ($id: ID!) {
       venta(id:$id) {
         concepto

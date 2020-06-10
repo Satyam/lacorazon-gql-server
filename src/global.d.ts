@@ -2,8 +2,8 @@
 
 type ID = string | number;
 
-type Rango = { offset?: number, limit?: number, last?: number }
+type Rango = { offset?: number; limit?: number; last?: number };
 
-type unused = any
+type unused = unknown;
 
-type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
+type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>;

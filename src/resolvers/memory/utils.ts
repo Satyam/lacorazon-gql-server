@@ -1,10 +1,10 @@
 import cuid from 'cuid';
-import { AnyFila } from '..';
+import { RecordWithId } from '..';
 
 export function compareFecha(
   a: { fecha: Date; id: ID },
   b: { fecha: Date; id: ID }
-) {
+): number {
   if (a.fecha < b.fecha) return -1;
   if (a.fecha > b.fecha) return 1;
   if (a.id > b.id) return -1;
@@ -12,16 +12,21 @@ export function compareFecha(
   return 0;
 }
 
-export function compareString(a: string, b: string) {
+export function compareString(a: string, b: string): number {
   if (a < b) return -1;
   if (a > b) return 1;
   return 0;
 }
 
-export function compareStringField(field: string) {
-  return (a: { [field: string]: any }, b: { [field: string]: any }) => {
-    const fa = a[field];
-    const fb = b[field];
+export function compareStringField(
+  field: string
+): (
+  a: { [field: string]: unknown },
+  b: { [field: string]: unknown }
+) => number {
+  return (a: { [field: string]: unknown }, b: { [field: string]: unknown }) => {
+    const fa = <string>a[field];
+    const fb = <string>b[field];
     if (fa < fb) {
       return -1;
     }
@@ -39,9 +44,9 @@ export function slice<R>(
   return last ? arr.slice(-last) : arr.slice(offset, offset + limit);
 }
 
-export function pickFields<R extends AnyFila, K extends keyof R>(
+export function pickFields<R extends RecordWithId>(
   fila: R,
-  camposSalida?: K[]
+  camposSalida?: Array<keyof R>
 ): Partial<R> {
   if (camposSalida && fila) {
     const ret: Partial<R> = {};
@@ -53,33 +58,33 @@ export function pickFields<R extends AnyFila, K extends keyof R>(
   return fila;
 }
 
-export function getById<R extends AnyFila, K extends keyof R>(
+export function getById<R extends RecordWithId>(
   tabla: { [id: string]: R },
   id: ID,
-  camposSalida?: K[]
+  camposSalida?: Array<keyof R>
 ): Partial<R> {
-  return pickFields(tabla[id], camposSalida);
+  return pickFields<R>(tabla[id], camposSalida);
 }
 
-export function getAllLimitOffset<R extends AnyFila, K extends keyof R>(
+export function getAllLimitOffset<R extends RecordWithId>(
   tabla: { [id: string]: R },
   rango: Rango,
-  camposSalida?: K[]
+  camposSalida?: Array<keyof R>
 ): Array<Partial<R>> {
   const ret = slice(
     Object.values(tabla).sort(compareStringField('nombre')),
     rango
   );
   if (camposSalida) {
-    return ret.map((fila) => pickFields(fila, camposSalida));
+    return ret.map((fila) => pickFields<R>(fila, camposSalida));
   }
   return ret;
 }
 
-export function createWithCuid<R extends AnyFila, K extends keyof R>(
+export function createWithCuid<R extends RecordWithId>(
   tabla: { [id: string]: R },
-  fila: Partial<R>,
-  camposSalida?: K[]
+  fila: Partial<R & { nombre: string }>,
+  camposSalida?: Array<keyof R>
 ): Partial<R> {
   const id = cuid();
   if (id in tabla) {
@@ -87,7 +92,8 @@ export function createWithCuid<R extends AnyFila, K extends keyof R>(
   }
   if (
     Object.values(tabla).find(
-      (d) => 'nombre' in d && 'nombre' in fila && d.nombre === fila.nombre
+      (d: R & { nombre?: string }) =>
+        'nombre' in d && 'nombre' in fila && d.nombre === fila.nombre
     )
   ) {
     throw new Error(`Duplicate nombre ${fila.nombre} found`);
@@ -95,16 +101,16 @@ export function createWithCuid<R extends AnyFila, K extends keyof R>(
   const d = {
     id,
     ...fila,
-  } as R;
+  };
   // eslint-disable-next-line no-param-reassign
-  tabla[id] = d;
-  return pickFields(d, camposSalida);
+  tabla[id] = <R>d;
+  return pickFields<R>(<R>d, camposSalida);
 }
 
-export function updateById<R extends AnyFila, K extends keyof R>(
+export function updateById<R extends RecordWithId>(
   tabla: { [id: string]: R },
   fila: PartialExcept<R, 'id'>,
-  camposSalida?: K[]
+  camposSalida?: Array<keyof R>
 ): Partial<R> {
   const { id, ...rest } = fila;
   const d = tabla[id];
@@ -112,13 +118,13 @@ export function updateById<R extends AnyFila, K extends keyof R>(
     ...d,
     ...rest,
   };
-  return pickFields(tabla[id], camposSalida);
+  return pickFields<R>(tabla[id], camposSalida);
 }
 
-export function deleteWithId<R extends AnyFila, K extends keyof R>(
+export function deleteWithId<R extends RecordWithId>(
   tabla: { [id: string]: R },
   id: ID,
-  camposSalida?: K[]
+  camposSalida?: Array<keyof R>
 ): Partial<R> {
   const d = tabla[id];
 
@@ -127,5 +133,5 @@ export function deleteWithId<R extends AnyFila, K extends keyof R>(
   }
   // eslint-disable-next-line no-param-reassign
   delete tabla[id];
-  return pickFields(d, camposSalida);
+  return pickFields<R>(d, camposSalida);
 }

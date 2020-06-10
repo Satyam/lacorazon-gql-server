@@ -1,18 +1,22 @@
 import type { sqlContext } from '.';
-import { Venta } from '..';
+import { Venta, User } from '..';
 import { createWithAutoId, updateById, deleteById } from './utils';
 
 const TABLE = 'Ventas';
 
 export default {
   Query: {
-    venta: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
+    venta: (
+      _: unused,
+      { id }: { id: ID },
+      { db }: sqlContext
+    ): Promise<Venta | undefined> =>
       db.get('select * from Ventas where id = ?', [id]),
     ventas: (
       _: unused,
       { offset = 0, limit, last, idVendedor }: Rango & { idVendedor: ID },
       { db }: sqlContext
-    ) => {
+    ): Promise<Venta[] | undefined> => {
       if (last) {
         return db
           .all(
@@ -49,15 +53,28 @@ export default {
     },
   },
   Mutation: {
-    createVenta: (_: unused, venta: Venta, { db }: sqlContext) =>
-      createWithAutoId(TABLE, venta, db),
-    updateVenta: (_: unused, venta: Venta, { db }: sqlContext) =>
-      updateById(TABLE, venta, db),
-    deleteVenta: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
-      deleteById(TABLE, id, db),
+    createVenta: (
+      _: unused,
+      venta: Venta,
+      { db }: sqlContext
+    ): Promise<Venta | undefined> => createWithAutoId<Venta>(TABLE, venta, db),
+    updateVenta: (
+      _: unused,
+      venta: Venta,
+      { db }: sqlContext
+    ): Promise<Venta | undefined> => updateById<Venta>(TABLE, venta, db),
+    deleteVenta: (
+      _: unused,
+      { id }: { id: ID },
+      { db }: sqlContext
+    ): Promise<Venta | undefined> => deleteById<Venta>(TABLE, id, db),
   },
   Venta: {
-    vendedor: (parent: Venta, _: unused, { db }: sqlContext) =>
+    vendedor: (
+      parent: Venta,
+      _: unused,
+      { db }: sqlContext
+    ): Promise<User | undefined> =>
       db.get('select * from Users where id = ?', [parent.idVendedor]),
   },
 };

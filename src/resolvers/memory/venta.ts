@@ -1,4 +1,4 @@
-import type { Venta } from '..';
+import type { Venta, User } from '..';
 import { jsonContext } from '.';
 
 import {
@@ -11,13 +11,16 @@ import {
 
 export default {
   Query: {
-    venta: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
-      data.ventas[id],
+    venta: (
+      _: unused,
+      { id }: { id: ID },
+      { data }: jsonContext
+    ): Partial<Venta> => data.ventas[id],
     ventas: (
       _: unused,
       { idVendedor, ...rango }: Rango & { idVendedor: ID },
       { data }: jsonContext
-    ) =>
+    ): Array<Partial<Venta>> =>
       slice(
         Object.values(data.ventas)
           .filter((fila) =>
@@ -28,15 +31,28 @@ export default {
       ),
   },
   Mutation: {
-    createVenta: (_: unused, venta: Venta, { data }: jsonContext) =>
-      createWithCuid(data.ventas, venta),
-    updateVenta: (_: unused, venta: Venta, { data }: jsonContext) =>
-      updateById(data.ventas, venta),
-    deleteVenta: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
-      deleteWithId(data.ventas, id),
+    createVenta: (
+      _: unused,
+      venta: Venta,
+      { data }: jsonContext
+    ): Partial<Venta> => createWithCuid(data.ventas, venta),
+    updateVenta: (
+      _: unused,
+      venta: Venta,
+      { data }: jsonContext
+    ): Partial<Venta> => updateById(data.ventas, venta),
+    deleteVenta: (
+      _: unused,
+      { id }: { id: ID },
+      { data }: jsonContext
+    ): Partial<Venta> => deleteWithId(data.ventas, id),
   },
   Venta: {
-    vendedor: (venta: Venta, _: unused, { data }: jsonContext) =>
-      venta.idVendedor && data.users[venta.idVendedor],
+    vendedor: (
+      venta: Venta,
+      _: unused,
+      { data }: jsonContext
+    ): Partial<User> | null =>
+      venta.idVendedor ? data.users[venta.idVendedor] : null,
   },
 };

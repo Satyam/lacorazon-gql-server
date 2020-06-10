@@ -2,12 +2,12 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import gqlFetch from './gqlfetch';
 
-import type { User } from '../resolvers';
+import type { User, Venta } from '../resolvers';
 dotenv.config({ path: '.env.tests' });
 dotenv.config();
 
 describe('user', () => {
-  const userQuery = gqlFetch(`
+  const userQuery = gqlFetch<{ user: User }>(`
     query ($id: ID!) {
       user(id:$id) {
         nombre
@@ -49,7 +49,7 @@ describe('user', () => {
       }));
   });
   describe('single user with ventas', () => {
-    const query = gqlFetch(`
+    const query = gqlFetch<{ user: User & { ventas: Venta[] } }>(`
     query ($id: ID!, $last: Int, $offset: Int, $limit: Int) {
       user(id:$id) {
         nombre
@@ -146,7 +146,7 @@ describe('user', () => {
       }));
   });
   describe('all users', () => {
-    const query = gqlFetch(`
+    const query = gqlFetch<{ users: User[] }>(`
     query  {
       users {
         nombre
@@ -187,7 +187,9 @@ describe('user', () => {
     const otroNombre = 'pepito';
     const otroPassword = 'pepitito';
     describe('create', () => {
-      const create = gqlFetch(`mutation ($nombre: String!, $email: String, $password: String!) {
+      const create = gqlFetch<{
+        createUser: User;
+      }>(`mutation ($nombre: String!, $email: String, $password: String!) {
       createUser(nombre: $nombre, email: $email, password: $password) {
         id
         nombre
@@ -199,7 +201,7 @@ describe('user', () => {
         return create(usuario)
           .then((result) => {
             expect(result.data.errors).toBeUndefined();
-            const u: User = result.data.data.createUser;
+            const u = result.data.data.createUser;
             expect(u.nombre).toBe(usuario.nombre);
             expect(u.email).toBe(usuario.email);
             // eslint-disable-next-line prefer-destructuring
@@ -219,21 +221,24 @@ describe('user', () => {
         }));
     });
     // Since switching to Auth0, login is remote
+    // eslint-disable-next-line jest/no-disabled-tests
     describe.skip('login', () => {
-      const login = gqlFetch(`mutation ($nombre: String!, $password: String!) {
+      const login = gqlFetch<{
+        login: User;
+      }>(`mutation ($nombre: String!, $password: String!) {
         login(nombre: $nombre, password: $password) {
           id
           nombre
           email
         }
       }`);
-      const currentUser = gqlFetch(`query {
+      const currentUser = gqlFetch<{ currentUser: User }>(`query {
         currentUser {
           nombre
           email
         }
       }`);
-      const logout = gqlFetch(`mutation { 
+      const logout = gqlFetch<{ logout: null }>(`mutation { 
         logout
       }`);
       const jwtMatch = /^jwt=([^;]*)/;
@@ -243,7 +248,7 @@ describe('user', () => {
           (result) => {
             expect(result.data.errors).toBeUndefined();
             // eslint-disable-next-line no-shadow
-            const { login }: { login: User } = result.data.data;
+            const { login } = result.data.data;
             expect(login.nombre).toBe(usuario.nombre);
             expect(login.email).toBe(usuario.email);
             const token = result.headers['set-cookie'].find((ck: string) =>
@@ -307,7 +312,9 @@ describe('user', () => {
         }));
     });
     describe('update', () => {
-      const update = gqlFetch(`mutation ($id: ID!, $nombre: String, $email: String, $password: String) {
+      const update = gqlFetch<{
+        updateUser: User;
+      }>(`mutation ($id: ID!, $nombre: String, $email: String, $password: String) {
         updateUser(id: $id, nombre: $nombre, email: $email, password: $password) {
           id
           nombre
@@ -359,7 +366,7 @@ describe('user', () => {
         }));
     });
     describe('delete', () => {
-      const del = gqlFetch(`mutation ($id: ID!) {
+      const del = gqlFetch<{ deleteUser: User }>(`mutation ($id: ID!) {
         deleteUser(id: $id) {
           id
           nombre

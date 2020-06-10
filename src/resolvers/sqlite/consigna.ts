@@ -1,14 +1,18 @@
 import type { sqlContext } from '.';
-import { Consignacion } from '..';
+import { Consignacion, User, Distribuidor } from '..';
 export default {
   Query: {
-    consigna: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
+    consigna: (
+      _: unused,
+      { id }: { id: ID },
+      { db }: sqlContext
+    ): Promise<Consignacion | undefined> =>
       db.get('select * from Consigna where id = ?', [id]),
     consignas: (
       _: unused,
       { offset = 0, limit, last }: Rango,
       { db }: sqlContext
-    ) => {
+    ): Promise<Array<Consignacion | undefined>> => {
       if (last) {
         return db
           .all(
@@ -32,9 +36,17 @@ export default {
     },
   },
   Consigna: {
-    vendedor: (consignacion: Consignacion, _: unused, { db }: sqlContext) =>
+    vendedor: (
+      consignacion: Consignacion,
+      _: unused,
+      { db }: sqlContext
+    ): Promise<User | undefined> =>
       db.get('select * from Users where id = ?', [consignacion.idVendedor]),
-    distribuidor: (consignacion: Consignacion, _: unused, { db }: sqlContext) =>
+    distribuidor: (
+      consignacion: Consignacion,
+      _: unused,
+      { db }: sqlContext
+    ): Promise<Distribuidor | undefined> =>
       db.get('select * from Distribuidores where id = ?', [
         consignacion.idDistribuidor,
       ]),

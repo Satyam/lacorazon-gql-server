@@ -102,7 +102,4 @@ export type Venta = {
 
 export type Fila = Consignacion | Distribuidor | Salida | User | Venta;
 
-export type AnyFila = PartialExcept<
-  Consignacion & Distribuidor & Salida & User & Venta & { [key: string]: any },
-  'id'
->;
+export type RecordWithId = { id: ID; [key: string]: unknown };

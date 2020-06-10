@@ -1,4 +1,4 @@
-import { Distribuidor } from '..';
+import { Distribuidor, Consignacion } from '..';
 import type { sqlContext } from '.';
 
 import {
@@ -13,31 +13,45 @@ const TABLE = 'Distribuidores';
 
 export default {
   Query: {
-    distribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
-      getById(TABLE, id, db),
-    distribuidores: (_: unused, rango: Rango, { db }: sqlContext) =>
-      getAllLimitOffset(TABLE, rango, db),
+    distribuidor: (
+      _: unused,
+      { id }: { id: ID },
+      { db }: sqlContext
+    ): Promise<Distribuidor | undefined> =>
+      getById<Distribuidor>(TABLE, id, db),
+    distribuidores: (
+      _: unused,
+      rango: Rango,
+      { db }: sqlContext
+    ): Promise<Array<Distribuidor> | undefined> =>
+      getAllLimitOffset<Distribuidor>(TABLE, rango, db),
   },
   Mutation: {
     createDistribuidor: (
       _: unused,
       distribuidor: Distribuidor,
       { db }: sqlContext
-    ) => createWithCuid(TABLE, distribuidor, db),
+    ): Promise<Distribuidor | undefined> =>
+      createWithCuid<Distribuidor>(TABLE, distribuidor, db),
     updateDistribuidor: (
       _: unused,
       distribuidor: Distribuidor,
       { db }: sqlContext
-    ) => updateById(TABLE, distribuidor, db),
-    deleteDistribuidor: (_: unused, { id }: { id: ID }, { db }: sqlContext) =>
-      deleteById(TABLE, id, db),
+    ): Promise<Distribuidor | undefined> =>
+      updateById<Distribuidor>(TABLE, distribuidor, db),
+    deleteDistribuidor: (
+      _: unused,
+      { id }: { id: ID },
+      { db }: sqlContext
+    ): Promise<Distribuidor | undefined> =>
+      deleteById<Distribuidor>(TABLE, id, db),
   },
   Distribuidor: {
     consigna: (
       parent: Distribuidor,
       { offset = 0, limit, last }: Rango,
       { db }: sqlContext
-    ) => {
+    ): Promise<Consignacion[] | undefined> => {
       if (last) {
         return db
           .all(
@@ -66,7 +80,11 @@ export default {
         }
       );
     },
-    existencias: (parent: Distribuidor, _: unused, { db }: sqlContext) =>
+    existencias: (
+      parent: Distribuidor,
+      _: unused,
+      { db }: sqlContext
+    ): Promise<number> =>
       db
         .get(
           `select 
@@ -77,7 +95,11 @@ export default {
           }
         )
         .then((row) => row.existencias),
-    entregados: (parent: Distribuidor, _: unused, { db }: sqlContext) =>
+    entregados: (
+      parent: Distribuidor,
+      _: unused,
+      { db }: sqlContext
+    ): Promise<number> =>
       db
         .get(
           `select total(entregados) as entregados

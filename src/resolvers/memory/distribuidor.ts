@@ -1,4 +1,4 @@
-import type { Distribuidor } from '..';
+import type { Distribuidor, Consignacion } from '..';
 import { jsonContext } from '.';
 import {
   compareFecha,
@@ -12,37 +12,55 @@ import {
 
 export default {
   Query: {
-    distribuidor: (_: unused, { id }: { id: ID }, { data }: jsonContext) =>
-      getById(data.distribuidores, id),
-    distribuidores: (_: unused, rango: Rango, { data }: jsonContext) =>
-      getAllLimitOffset(data.distribuidores, rango),
+    distribuidor: (
+      _: unused,
+      { id }: { id: ID },
+      { data }: jsonContext
+    ): Partial<Distribuidor> => getById<Distribuidor>(data.distribuidores, id),
+    distribuidores: (
+      _: unused,
+      rango: Rango,
+      { data }: jsonContext
+    ): Array<Partial<Distribuidor>> =>
+      getAllLimitOffset<Distribuidor>(data.distribuidores, rango),
   },
   Mutation: {
     createDistribuidor: (
       _: unused,
       distribuidor: Distribuidor,
       { data }: jsonContext
-    ) => createWithCuid(data.distribuidores, distribuidor),
+    ): Partial<Distribuidor> =>
+      createWithCuid<Distribuidor>(data.distribuidores, distribuidor),
     updateDistribuidor: (
       _: unused,
       distribuidor: Distribuidor,
       { data }: jsonContext
-    ) => updateById(data.distribuidores, distribuidor),
+    ): Partial<Distribuidor> =>
+      updateById<Distribuidor>(data.distribuidores, distribuidor),
     deleteDistribuidor: (
       _: unused,
       { id }: { id: ID },
       { data }: jsonContext
-    ) => deleteWithId(data.distribuidores, id),
+    ): Partial<Distribuidor> =>
+      deleteWithId<Distribuidor>(data.distribuidores, id),
   },
   Distribuidor: {
-    consigna: (parent: Distribuidor, rango: Rango, { data }: jsonContext) =>
+    consigna: (
+      parent: Distribuidor,
+      rango: Rango,
+      { data }: jsonContext
+    ): Consignacion[] =>
       slice(
         Object.values(data.consigna)
           .filter((consigna) => consigna.idDistribuidor === parent.id)
           .sort(compareFecha),
         rango
       ),
-    existencias: (parent: Distribuidor, _: unused, { data }: jsonContext) =>
+    existencias: (
+      parent: Distribuidor,
+      _: unused,
+      { data }: jsonContext
+    ): number =>
       Object.values(data.consigna).reduce(
         (existencias, c) =>
           existencias +
@@ -51,7 +69,11 @@ export default {
             : 0),
         0
       ),
-    entregados: (parent: Distribuidor, _: unused, { data }: jsonContext) =>
+    entregados: (
+      parent: Distribuidor,
+      _: unused,
+      { data }: jsonContext
+    ): number =>
       Object.values(data.consigna).reduce(
         (entregados, c) =>
           entregados + (c.idDistribuidor === parent.id ? c.entregados || 0 : 0),

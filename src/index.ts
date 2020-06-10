@@ -8,15 +8,11 @@ import { checkJwt } from './auth0';
 
 import { JSONData } from './resolvers/memory';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user: {
-        permissions: string[];
-      };
-    }
-  }
-}
+type MyRequest = Request & {
+  user: {
+    permissions: string[];
+  };
+};
 
 async function getApolloServer(): Promise<ApolloServer | null> {
   const dataSource = process.env.DATA_SOURCE;
@@ -39,7 +35,10 @@ async function getApolloServer(): Promise<ApolloServer | null> {
               resolvers: resolvers.default,
               context: ({ req }) => ({
                 db,
-                permissions: (req.user && req.user.permissions) || [],
+                permissions:
+                  ((<MyRequest>req).user &&
+                    (<MyRequest>req).user.permissions) ||
+                  [],
               }),
             });
           } else {
@@ -60,7 +59,9 @@ async function getApolloServer(): Promise<ApolloServer | null> {
             resolvers: resolvers.default,
             context: ({ req }) => ({
               data,
-              permissions: (req.user && req.user.permissions) || [],
+              permissions:
+                ((<MyRequest>req).user && (<MyRequest>req).user.permissions) ||
+                [],
             }),
           });
         } else {
@@ -114,7 +115,7 @@ async function start() {
       //   next();
       // },
       checkJwt,
-      (err: any, req: Request, res: Response, next: NextFunction) => {
+      (err: Error, req: Request, res: Response, next: NextFunction) => {
         if (err.name === 'UnauthorizedError') {
           // console.log('unauthorized');
           next();
