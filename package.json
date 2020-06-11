@@ -4,10 +4,10 @@
   "description": "GraphQL- Express server for La Corazón app.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "reset; npm run test:json ; npm run test:sqlite",
     "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
-    "test:json": "DATA_SOURCE=JSON npm t",
-    "test:sqlite": "DATA_SOURCE=SQLite npm t",
+    "test:json": "DATA_SOURCE=JSON jest",
+    "test:sqlite": "DATA_SOURCE=SQLite jest",
     "start": "nodemon --exec ts-node --files src/index.ts",
     "server": "ts-node --files src/index.ts",
     "server:debug": "TS_NODE_FILES=true node -r ts-node/register --inspect src/index.ts",
