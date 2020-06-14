@@ -1,3 +1,4 @@
+import type { Request, Response } from 'express';
 import userResolvers from './user';
 import ventaResolvers from './venta';
 import distribuidorResolvers from './distribuidor';
