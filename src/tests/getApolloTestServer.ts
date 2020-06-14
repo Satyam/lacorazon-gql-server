@@ -50,6 +50,20 @@ export default async function getApolloTestServer(): Promise<ApolloServer> {
           return Promise.reject('Environment variable JSON_FILE is required');
         }
         break;
+      case 'prisma':
+        console.log('Start with Prisma');
+        const { PrismaClient } = await import('@prisma/client');
+        const prisma = new PrismaClient();
+        const resolvers = await import('../resolvers/prisma');
+        return new ApolloServer({
+          typeDefs: schema,
+          resolvers: resolvers.default,
+          context: () => ({
+            prisma,
+          }),
+        });
+        break;
+
       default:
         return Promise.reject('No data source given');
     }
