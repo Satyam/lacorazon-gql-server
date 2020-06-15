@@ -13,6 +13,7 @@ describe('distribuidor', () => {
   describe('single distribuidor', () => {
     test('distribuidor d1', () =>
       distribuidorQuery({ id: 'd1' }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -26,6 +27,7 @@ describe('distribuidor', () => {
       }));
     test('distribuidor d2', () =>
       distribuidorQuery({ id: 'd2' }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -39,6 +41,7 @@ describe('distribuidor', () => {
       }));
     test('distribuidor xxxx', () =>
       distribuidorQuery({ id: 'xxxx' }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
                                         Object {
                                           "data": Object {
@@ -69,6 +72,8 @@ describe('distribuidor', () => {
   `);
     test('distribuidor d1, all consigna', () =>
       query({ id: 'd1' }).then((result) => {
+        console.log(JSON.stringify(result.data.errors, null, 2));
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
           Object {
             "data": Object {
@@ -116,6 +121,7 @@ describe('distribuidor', () => {
       }));
     test('distribuidor d1, last 3 consigna', () =>
       query({ id: 'd1', last: 3 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
           Object {
             "data": Object {
@@ -152,6 +158,7 @@ describe('distribuidor', () => {
       }));
     test('distribuidor d1, 2 items starting at 1', () =>
       query({ id: 'd1', offset: 1, limit: 2 }).then((result) => {
+        expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
           Object {
             "data": Object {
