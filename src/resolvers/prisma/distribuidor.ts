@@ -17,12 +17,18 @@ export default {
       rango: Rango,
       { prisma }: prismaContext
     ): Promise<Distribuidores[]> =>
-      prisma.distribuidores.findMany({
-        skip: rango.offset,
-        take: rango.limit,
-        orderBy: { nombre: 'asc', id: 'asc' },
-        // Falta rango.last
-      }),
+      rango.last
+        ? prisma.distribuidores
+            .findMany({
+              take: rango.last,
+              orderBy: { nombre: 'desc' },
+            })
+            .then((data) => data.reverse())
+        : prisma.distribuidores.findMany({
+            skip: rango.offset,
+            take: rango.limit,
+            orderBy: { nombre: 'asc' },
+          }),
   },
   Mutation: {
     createDistribuidor: (
@@ -59,12 +65,20 @@ export default {
       rango: Rango,
       { prisma }: prismaContext
     ): Promise<Consigna[]> =>
-      prisma.consigna.findMany({
-        where: { idDistribuidor: distribuidor.id },
-        skip: rango.offset,
-        take: rango.limit,
-        orderBy: { fecha: 'desc' },
-      }),
+      rango.last
+        ? prisma.consigna
+            .findMany({
+              where: { idDistribuidor: distribuidor.id },
+              take: rango.last,
+              orderBy: { fecha: 'asc' },
+            })
+            .then((data) => data.reverse())
+        : prisma.consigna.findMany({
+            where: { idDistribuidor: distribuidor.id },
+            skip: rango.offset,
+            take: rango.limit,
+            orderBy: { fecha: 'desc' },
+          }),
     existencias: async (
       distribuidor: Distribuidores,
       _: unused,

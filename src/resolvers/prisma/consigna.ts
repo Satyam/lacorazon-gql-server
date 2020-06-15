@@ -12,12 +12,18 @@ export default {
       rango: Rango,
       { prisma }: prismaContext
     ): Promise<Consigna[]> =>
-      prisma.consigna.findMany({
-        skip: rango.offset,
-        take: rango.limit,
-        orderBy: { fecha: 'asc', id: 'asc' },
-        // Falta rango.last
-      }),
+      rango.last
+        ? prisma.consigna
+            .findMany({
+              take: rango.last,
+              orderBy: { fecha: 'desc' },
+            })
+            .then((data) => data.reverse())
+        : prisma.consigna.findMany({
+            skip: rango.offset,
+            take: rango.limit,
+            orderBy: { fecha: 'asc' },
+          }),
   },
   Consigna: {
     vendedor: (

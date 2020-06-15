@@ -20,12 +20,18 @@ export default {
       rango: Rango,
       { prisma }: prismaContext
     ): Promise<Users[]> =>
-      prisma.users.findMany({
-        skip: rango.offset,
-        take: rango.limit,
-        orderBy: { nombre: 'asc', id: 'asc' },
-        // Falta rango.last
-      }),
+      rango.last
+        ? prisma.users
+            .findMany({
+              take: rango.last,
+              orderBy: { nombre: 'desc' },
+            })
+            .then((data) => data.reverse())
+        : prisma.users.findMany({
+            skip: rango.offset,
+            take: rango.limit,
+            orderBy: { nombre: 'asc' },
+          }),
     currentUser: (_: unused, _1: unused, { req }: prismaContext): string =>
       req.currentUser,
   },
@@ -68,12 +74,19 @@ export default {
       rango: Rango,
       { prisma }: prismaContext
     ): Promise<Ventas[]> =>
-      prisma.ventas.findMany({
-        where: { idVendedor: user.id },
-        skip: rango.offset,
-        take: rango.limit,
-        orderBy: { fecha: 'desc' },
-        // Falta rango.last
-      }),
+      rango.last
+        ? prisma.ventas
+            .findMany({
+              where: { idVendedor: user.id },
+              take: rango.last,
+              orderBy: { fecha: 'desc' },
+            })
+            .then((data) => data.reverse())
+        : prisma.ventas.findMany({
+            where: { idVendedor: user.id },
+            skip: rango.offset,
+            take: rango.limit,
+            orderBy: { fecha: 'asc' },
+          }),
   },
 };

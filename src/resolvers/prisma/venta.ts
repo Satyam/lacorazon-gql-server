@@ -5,21 +5,31 @@ export default {
   Query: {
     venta: (
       _: unused,
-      { id }: { id: number },
+      { id }: { id: ID },
       { prisma }: prismaContext
-    ): Promise<Ventas | null> => prisma.ventas.findOne({ where: { id } }),
+    ): Promise<Ventas | null> =>
+      prisma.ventas.findOne({ where: { id: Number(id) } }),
     ventas: (
       _: unused,
       { idVendedor, ...rango }: Rango & { idVendedor: ID },
       { prisma }: prismaContext
-    ): Promise<Ventas[]> =>
-      prisma.ventas.findMany({
+    ): Promise<Ventas[]> => {
+      if (rango.last) {
+        return prisma.ventas
+          .findMany({
+            where: { idVendedor: <string>idVendedor },
+            take: rango.last,
+            orderBy: { fecha: 'desc' },
+          })
+          .then((data) => data.reverse());
+      }
+      return prisma.ventas.findMany({
         where: { idVendedor: <string>idVendedor },
         skip: rango.offset,
         take: rango.limit,
-        orderBy: { fecha: 'desc', id: 'asc' },
-        // Falta rango.last
-      }),
+        orderBy: { fecha: 'asc' },
+      });
+    },
   },
   Mutation: {
     createVenta: (
@@ -40,11 +50,11 @@ export default {
     },
     deleteVenta: (
       _: unused,
-      { id }: { id: number },
+      { id }: { id: ID },
       { prisma }: prismaContext
     ): Promise<Ventas> =>
       prisma.ventas.delete({
-        where: { id },
+        where: { id: Number(id) },
       }),
   },
   Venta: {
