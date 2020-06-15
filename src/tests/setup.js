@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 import { join } from 'path';
-import { copy } from 'fs-extra';
+import { copy, writeFile } from 'fs-extra';
 import { spawn } from 'child_process';
 
+const { parsed } = dotenv.config();
 dotenv.config({ path: '.env.tests' });
-dotenv.config();
 
 function relPath(path) {
   return join(process.cwd(), path);
@@ -17,6 +17,8 @@ module.exports = async () => {
   if (!sqliteFile) throw new Error('Missing SQLITE_FILE environment variable');
   await copy(relPath('src/tests/data.orig.json'), relPath(jsonFile));
   await copy(relPath('src/tests/db.orig.sqlite'), relPath(sqliteFile));
+
+  await writeFile('prisma/.env', `PRISMA_SOURCE=file:${relPath(sqliteFile)}`);
   console.log('Starting test server.');
 
   return new Promise((resolve, reject) => {
@@ -48,5 +50,6 @@ module.exports = async () => {
     server.on('error', reject);
 
     global.serverProcess = server;
+    global.SQLITE_FILE = parsed.SQLITE_FILE;
   });
 };
