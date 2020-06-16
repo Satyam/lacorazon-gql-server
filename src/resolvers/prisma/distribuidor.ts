@@ -70,14 +70,14 @@ export default {
             .findMany({
               where: { idDistribuidor: distribuidor.id },
               take: rango.last,
-              orderBy: { fecha: 'asc' },
+              orderBy: { fecha: 'desc' },
             })
             .then((data) => data.reverse())
         : prisma.consigna.findMany({
             where: { idDistribuidor: distribuidor.id },
             skip: rango.offset,
             take: rango.limit,
-            orderBy: { fecha: 'desc' },
+            orderBy: { fecha: 'asc' },
           }),
     existencias: async (
       distribuidor: Distribuidores,
@@ -90,9 +90,9 @@ export default {
       return cs.reduce(
         (existencias, c) =>
           existencias +
-          (c.idDistribuidor === distribuidor.id
-            ? (c.entregados || 0) - (c.vendidos || 0) - (c.devueltos || 0)
-            : 0),
+          (c.entregados || 0) -
+          (c.vendidos || 0) -
+          (c.devueltos || 0),
         0
       );
     },
@@ -105,12 +105,7 @@ export default {
       const cs = await prisma.consigna.findMany({
         where: { idDistribuidor: distribuidor.id },
       });
-      return cs.reduce(
-        (entregados, c) =>
-          entregados +
-          (c.idDistribuidor === distribuidor.id ? c.entregados || 0 : 0),
-        0
-      );
+      return cs.reduce((entregados, c) => entregados + (c.entregados || 0), 0);
     },
   },
 };

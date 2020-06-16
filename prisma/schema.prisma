@@ -7,56 +7,56 @@ datasource db {
   url      = env("PRISMA_SOURCE")
 }
 
+model Salidas {
+  concepto String?
+  fecha    String?
+  id       Int     @default(autoincrement()) @id
+  importe  Float?
+}
+
+model Distribuidores {
+  contacto  String?
+  direccion String?
+  email     String?
+  id        String     @unique
+  localidad String?
+  nombre    String     @unique
+  telefono  String?
+  Consigna  Consigna[]
+}
+
 model Users {
-  email    String?    @default("")
+  email    String?
   id       String     @unique
   nombre   String     @unique
-  password String?    @default("")
+  password String?
   Consigna Consigna[]
   Ventas   Ventas[]
 }
 
-model Distribuidores {
-  contacto  String?    @default("")
-  direccion String?    @default("")
-  email     String?    @default("")
-  id        String     @unique
-  localidad String?    @default("")
-  nombre    String     @unique
-  telefono  String?    @default("")
-  Consigna  Consigna[]
-}
-
-model Salidas {
-  concepto String? @default("")
-  fecha    String? @default("CURRENT_TIMESTAMP")
-  id       Int     @default(autoincrement()) @id
-  importe  Int?    @default(0)
-}
-
 model Consigna {
-  cobrado        Int?            @default(0)
-  comentarios    String?         @default("")
-  devueltos      Int?            @default(0)
-  entregados     Int?            @default(0)
-  fecha          String?         @default("CURRENT_TIMESTAMP")
+  cobrado        Float?
+  comentarios    String?
+  devueltos      Int?
+  entregados     Int?
+  fecha          String?
   id             Int             @default(autoincrement()) @id
   idDistribuidor String?
   idVendedor     String?
-  iva            Boolean?        @default(false)
-  porcentaje     Int?            @default(0)
-  vendidos       Int?            @default(0)
+  iva            Boolean?
+  porcentaje     Float?
+  vendidos       Int?
   Distribuidores Distribuidores? @relation(fields: [idDistribuidor], references: [id])
   Users          Users?          @relation(fields: [idVendedor], references: [id])
 }
 
 model Ventas {
-  cantidad       Int?     @default(0)
-  concepto       String?  @default("")
-  fecha          String?  @default("CURRENT_TIMESTAMP")
+  cantidad       Int?
+  concepto       String?
+  fecha          String?
   id             Int      @default(autoincrement()) @id
   idVendedor     String?
-  iva            Boolean? @default(false)
-  precioUnitario Int?     @default(0)
+  iva            Boolean?
+  precioUnitario Float?
   Users          Users?   @relation(fields: [idVendedor], references: [id])
 }

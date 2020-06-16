@@ -7,7 +7,7 @@ import schema from './schema';
 import { checkJwt } from './auth0';
 
 import { JSONData } from './resolvers/memory';
-
+// import type { QueryEvent } from '@prisma/client';
 type MyRequest = Request & {
   user: {
     permissions: string[];
@@ -69,6 +69,13 @@ async function getApolloServer(): Promise<ApolloServer | null> {
         console.log('Start with Prisma');
         const { PrismaClient } = await import('@prisma/client');
         const prisma = new PrismaClient();
+        // prisma.on('query', (e: QueryEvent) => {
+        //   console.log(
+        //     '***',
+        //     e.query.replace(/`db`\./g, '').replace(/`/g, ''),
+        //     e.params
+        //   );
+        // });
         const resolvers = await import('./resolvers/prisma');
         return new ApolloServer({
           typeDefs: schema,
