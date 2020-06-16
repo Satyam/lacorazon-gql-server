@@ -1,4 +1,5 @@
-import sqlite from 'sqlite';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import 'dotenv/config';
 import argon2 from 'argon2';
 import {
@@ -11,70 +12,80 @@ import {
 
 const create = [
   'drop table if exists Users',
-  `create table Users (
-    id text not null unique,
-    nombre text not null,
-    email text default '',
-    password text default ''
+  `CREATE TABLE "Users" (
+    "id"	text NOT NULL UNIQUE,
+    "nombre"	text NOT NULL,
+    "email"	text,
+    "password"	TEXT
   )`,
   `CREATE UNIQUE INDEX userId ON Users(id)`,
   `CREATE UNIQUE INDEX userNombre ON Users(nombre)`,
 
   'drop table if exists Distribuidores',
-  `create table Distribuidores (
-    id text not null unique,
-    nombre text not null,
-    localidad text  default '',
-    contacto text default '',
-    telefono text default '',
-    email text default '',
-    direccion text default ''
+  `CREATE TABLE "Distribuidores" (
+    "id"	text NOT NULL UNIQUE,
+    "nombre"	text NOT NULL,
+    "localidad"	text,
+    "contacto"	text,
+    "telefono"	text,
+    "email"	text,
+    "direccion"	text
   )`,
   'create unique index distribuidorId on Distribuidores(id)',
   'create unique index distribuidorNombre on Distribuidores(nombre)',
 
   'drop table if exists Consigna',
-  `create table Consigna (
-    id integer primary key,
-    fecha text default CURRENT_TIMESTAMP,
-    idDistribuidor text default '',
-    idVendedor text default '',
-    entregados integer default 0,
-    porcentaje integer default 0,
-    vendidos integer default 0,
-    devueltos integer default 0,
-    cobrado integer default 0,
-    iva boolean default 0,
-    comentarios text default ''
-)`,
+  `CREATE TABLE "Consigna" (
+    "id"	INTEGER,
+    "fecha"	text,
+    "idDistribuidor"	text,
+    "idVendedor"	text,
+    "entregados"	integer,
+    "porcentaje"	float,
+    "vendidos"	integer,
+    "devueltos"	integer,
+    "cobrado"	float,
+    "iva"	boolean,
+    "comentarios"	text,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    FOREIGN KEY("idVendedor") REFERENCES "Users"("id"),
+    FOREIGN KEY("idDistribuidor") REFERENCES "Distribuidores"("id")
+  )`,
 
   'drop table if exists Ventas',
-  `create table Ventas (
-    id integer primary key,
-    concepto text default '',
-    fecha text default CURRENT_TIMESTAMP,
-    idVendedor text default '',
-    cantidad integer default 0,
-    precioUnitario integer default 0,
-    iva boolean default 0
+  `CREATE TABLE "Ventas" (
+    "id"	INTEGER,
+    "concepto"	text,
+    "fecha"	text,
+    "idVendedor"	text,
+    "cantidad"	integer,
+    "precioUnitario"	float,
+    "iva"	boolean,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    FOREIGN KEY("idVendedor") REFERENCES "Users"("id")
   )`,
   'drop table if exists Salidas',
-  `create table Salidas (
-    id integer primary key,
-    fecha text default CURRENT_TIMESTAMP,
-    concepto text default '',
-    importe integer default 0
+  `CREATE TABLE "Salidas" (
+    "id"	integer,
+    "fecha"	text,
+    "concepto"	text,
+    "importe"	float,
+    PRIMARY KEY("id")
   )`,
 ];
 
-sqlite.open(process.env.SQLITE_FILE).then(db => {
+console.log(open);
+open({
+  filename: process.env.SQLITE_FILE,
+  driver: sqlite3.Database,
+}).then((db) => {
   create
     .reduce((p, s) => p.then(() => db.run(s)), Promise.resolve())
     .then(() =>
       usuarios.reduce(
         (p, u) =>
           p.then(() =>
-            argon2.hash(u.nombre).then(password =>
+            argon2.hash(u.nombre).then((password) =>
               db.run(
                 `insert into Users 
               (id, nombre, email, password) 
