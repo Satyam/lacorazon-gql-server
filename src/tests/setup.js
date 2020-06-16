@@ -3,8 +3,8 @@ import { join } from 'path';
 import { copy, writeFile } from 'fs-extra';
 import { spawn } from 'child_process';
 
-const { parsed } = dotenv.config();
 dotenv.config({ path: '.env.tests' });
+const { parsed } = dotenv.config();
 
 function relPath(path) {
   return join(process.cwd(), path);
