@@ -72,7 +72,6 @@ describe('distribuidor', () => {
   `);
     test('distribuidor d1, all consigna', () =>
       query({ id: 'd1' }).then((result) => {
-        console.log(JSON.stringify(result.data.errors, null, 2));
         expect(result.data.errors).toBeUndefined();
         expect(result.data).toMatchInlineSnapshot(`
           Object {
