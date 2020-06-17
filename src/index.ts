@@ -2,13 +2,18 @@ import 'dotenv/config';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
-
+import { DocumentNode } from 'graphql';
 import schema from './schema';
 import { checkJwt } from './auth0';
 
-import { JSONData } from './resolvers/memory';
-// import type { QueryEvent } from '@prisma/client';
-type MyRequest = Request & {
+export type typeDefs =
+  | DocumentNode
+  | Array<DocumentNode>
+  | string
+  | Array<string>
+  | undefined;
+
+export type MyRequest = Request & {
   user: {
     permissions: string[];
   };
@@ -18,75 +23,15 @@ async function getApolloServer(): Promise<ApolloServer | null> {
   const dataSource = process.env.DATA_SOURCE;
   if (dataSource) {
     switch (dataSource.toLowerCase()) {
-      case 'sqlite': {
-        console.log('Start with SQLite');
-        const sqliteFile = process.env.SQLITE_FILE;
-        if (sqliteFile) {
-          const sqlite = await import('sqlite');
-          const resolvers = await import('./resolvers/sqlite');
-          const sqlite3 = await import('sqlite3');
-          const db = await sqlite.open({
-            filename: sqliteFile,
-            driver: sqlite3.Database,
-          });
-          return new ApolloServer({
-            typeDefs: schema,
-            resolvers: resolvers.default,
-            context: ({ req }) => ({
-              db,
-              permissions:
-                ((<MyRequest>req).user && (<MyRequest>req).user.permissions) ||
-                [],
-            }),
-          });
-        } else {
-          console.error('Environment variable SQLITE_FILE is required');
-          process.exit(1);
-        }
-      }
+      case 'sqlite':
+        const { serverSqlite } = await import('./serverSqlite');
+        return await serverSqlite(schema);
       case 'json':
-        console.log('Start with JSON');
-        const jsonFile = process.env.JSON_FILE;
-        if (jsonFile) {
-          const resolvers = await import('./resolvers/memory');
-          const fs = await import('fs-extra');
-          const data: JSONData = await fs.readJson(jsonFile);
-          return new ApolloServer({
-            typeDefs: schema,
-            resolvers: resolvers.default,
-            context: ({ req }) => ({
-              data,
-              permissions:
-                ((<MyRequest>req).user && (<MyRequest>req).user.permissions) ||
-                [],
-            }),
-          });
-        } else {
-          console.error('Environment variable JSON_FILE is required');
-          process.exit(1);
-        }
+        const { serverJson } = await import('./serverJson');
+        return await serverJson(schema);
       case 'prisma':
-        console.log('Start with Prisma');
-        const { PrismaClient } = await import('@prisma/client');
-        const prisma = new PrismaClient();
-        // prisma.on('query', (e: QueryEvent) => {
-        //   console.log(
-        //     '***',
-        //     e.query.replace(/`db`\./g, '').replace(/`/g, ''),
-        //     e.params
-        //   );
-        // });
-        const resolvers = await import('./resolvers/prisma');
-        return new ApolloServer({
-          typeDefs: schema,
-          resolvers: resolvers.default,
-          context: ({ req }) => ({
-            prisma,
-            permissions:
-              ((<MyRequest>req).user && (<MyRequest>req).user.permissions) ||
-              [],
-          }),
-        });
+        const { serverPrisma } = await import('./serverPrisma');
+        return await serverPrisma(schema);
       default:
         console.error('No data source given');
         return null;
