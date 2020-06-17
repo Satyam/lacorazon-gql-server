@@ -16,6 +16,12 @@ export async function serverPrisma(schema: typeDefs): Promise<ApolloServer> {
   //     e.params
   //   );
   // });
+  process.on('SIGTERM', () => {
+    // I haven't seen it called.
+    // It was meant to avoid the error message on test end.
+    console.log('*** disconnecting ***');
+    prisma.disconnect();
+  });
   return new ApolloServer({
     typeDefs: schema,
     resolvers,
