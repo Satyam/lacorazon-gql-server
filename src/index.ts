@@ -2,16 +2,8 @@ import 'dotenv/config';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
-import { DocumentNode } from 'graphql';
 import schema from './schema';
 import { checkJwt } from './auth0';
-
-export type typeDefs =
-  | DocumentNode
-  | Array<DocumentNode>
-  | string
-  | Array<string>
-  | undefined;
 
 export type MyRequest = Request & {
   user: {
@@ -19,23 +11,39 @@ export type MyRequest = Request & {
   };
 };
 
-async function getApolloServer(): Promise<ApolloServer | null> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Context = { resolvers: any; context: any };
+
+async function getApolloServer(): Promise<ApolloServer> {
   const dataSource = process.env.DATA_SOURCE;
+  let ctx: Context | undefined;
   if (dataSource) {
     switch (dataSource.toLowerCase()) {
       case 'sqlite':
-        const { serverSqlite } = await import('./serverSqlite');
-        return await serverSqlite(schema);
+        const { contextSqlite } = await import('./serverSqlite');
+        ctx = await contextSqlite();
       case 'json':
-        const { serverJson } = await import('./serverJson');
-        return await serverJson(schema);
+        const { contextJson } = await import('./serverJson');
+        ctx = await contextJson();
       case 'prisma':
-        const { serverPrisma } = await import('./serverPrisma');
-        return await serverPrisma(schema);
+        const { contextPrisma } = await import('./serverPrisma');
+        ctx = await contextPrisma();
       default:
         console.error('No data source given');
-        return null;
     }
+    if (ctx) {
+      const { resolvers, context } = ctx;
+      return new ApolloServer({
+        typeDefs: schema,
+        resolvers,
+        context: ({ req }) => ({
+          ...context,
+          permissions:
+            ((<MyRequest>req).user && (<MyRequest>req).user.permissions) || [],
+        }),
+      });
+    }
+    process.exit(1);
   } else {
     console.error('Environment variable DATA_SOURCE is required');
     process.exit(1);
