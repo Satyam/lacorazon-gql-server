@@ -16,20 +16,24 @@ export type Context = { resolvers: any; context: any };
 
 async function getApolloServer(): Promise<ApolloServer> {
   const dataSource = process.env.DATA_SOURCE;
-  let ctx: Context | undefined;
   if (dataSource) {
+    let ctx: Context | undefined;
     switch (dataSource.toLowerCase()) {
       case 'sqlite':
         const { contextSqlite } = await import('./serverSqlite');
         ctx = await contextSqlite();
+        break;
       case 'json':
         const { contextJson } = await import('./serverJson');
         ctx = await contextJson();
+        break;
       case 'prisma':
         const { contextPrisma } = await import('./serverPrisma');
         ctx = await contextPrisma();
+        break;
       default:
         console.error('No data source given');
+        break;
     }
     if (ctx) {
       const { resolvers, context } = ctx;
