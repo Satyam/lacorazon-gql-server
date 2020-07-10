@@ -29,9 +29,25 @@ export interface jsonContext {
   data: JSONData;
   permissions: string[];
 }
-export default [
-  userResolvers,
-  ventaResolvers,
-  distribuidorResolvers,
-  consignaResolvers,
-];
+
+import type { Context } from '..';
+
+export async function getContext(): Promise<Context | undefined> {
+  console.log('Start with JSON');
+  const jsonFile = process.env.JSON_FILE;
+  if (jsonFile) {
+    const fs = await import('fs-extra');
+    const data: JSONData = await fs.readJson(jsonFile);
+    if (data)
+      return {
+        resolvers: [
+          userResolvers,
+          ventaResolvers,
+          distribuidorResolvers,
+          consignaResolvers,
+        ],
+        context: { data },
+      };
+  }
+  console.error('Environment variable JSON_FILE is required');
+}

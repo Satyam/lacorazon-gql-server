@@ -1,4 +1,4 @@
-import schema from './';
+import schema from '.';
 import { generateTypeScriptTypes } from 'graphql-schema-typescript';
 import { makeExecutableSchema } from 'apollo-server';
 import { printSchema } from 'graphql';

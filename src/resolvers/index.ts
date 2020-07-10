@@ -103,3 +103,6 @@ export type Venta = {
 export type Fila = Consignacion | Distribuidor | Salida | User | Venta;
 
 export type RecordWithId = { id: ID; [key: string]: unknown };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Context = { resolvers: any; context: any };
