@@ -16,7 +16,7 @@ beforeAll(() => {
     });
 
     server.stdout.on('data', (data) => {
-      console.log(data.toString());
+      // console.log(data.toString());
       if (
         data
           .toString()
@@ -26,7 +26,7 @@ beforeAll(() => {
             }${process.env.GRAPHQL}`
           )
       ) {
-        console.log('Server running.');
+        // console.log('Server running.');
         resolve();
       }
     });
