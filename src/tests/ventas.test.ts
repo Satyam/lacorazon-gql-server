@@ -9,8 +9,8 @@ afterAll(killPrisma);
 describe('Ventas', () => {
   describe('ventas', () => {
     const queryVentas = getQuery<
-      Rango & { idVendedor?: ID },
-      { ventas: Venta[] }
+      { ventas: Venta[] },
+      Rango & { idVendedor?: ID }
     >(gql`
       query($offset: Int, $limit: Int, $last: Int, $idVendedor: ID) {
         ventas(
@@ -188,19 +188,16 @@ describe('Ventas', () => {
 
   describe('single Venta', () => {
     test('venta', async () => {
-      const result1 = await getQuery<
-        Record<string, unknown>,
-        { ventas: Venta[] }
-      >(gql`
+      const result1 = await getQuery<{ ventas: Venta[] }>(gql`
         query {
           ventas(last: 1) {
             id
           }
         }
-      `)({});
+      `)();
       const ventaId = result1.data.ventas[0].id;
 
-      const result = await getQuery<{ id: ID }, Venta>(gql`
+      const result = await getQuery<Venta>(gql`
         query($id: ID!) {
           venta(id: $id) {
             concepto

@@ -12,8 +12,8 @@ afterAll(killPrisma);
 
 describe('distribuidor', () => {
   const distribuidorQuery = getQuery<
-    { id: ID },
-    { distribuidor: Distribuidor }
+    { distribuidor: Distribuidor },
+    { id: ID }
   >(
     gql`
       query($id: ID!) {
@@ -65,10 +65,10 @@ describe('distribuidor', () => {
 
   describe('single distribuidor with stock', () => {
     const queryConsignaDist = getQuery<
-      { id: ID; last?: number; offset?: number; limit?: number },
       {
         distribuidor: Distribuidor & { consigna: Consignacion[] };
-      }
+      },
+      { id: ID; last?: number; offset?: number; limit?: number }
     >(gql`
       query($id: ID!, $last: Int, $offset: Int, $limit: Int) {
         distribuidor(id: $id) {
@@ -202,8 +202,8 @@ describe('distribuidor', () => {
 
   describe('distribuidores', () => {
     const queryDistribuidores = getQuery<
-      { offset?: number; limit?: number },
-      { distribuidores: Distribuidor[] }
+      { distribuidores: Distribuidor[] },
+      { offset?: number; limit?: number }
     >(gql`
       query($offset: Int, $limit: Int) {
         distribuidores(offset: $offset, limit: $limit) {

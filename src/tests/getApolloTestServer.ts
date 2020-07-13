@@ -52,11 +52,11 @@ export async function killPrisma(): Promise<void> {
 type CustomResponse<R> = Promise<Omit<GraphQLResponse, 'data'> & { data: R }>;
 
 export const getQuery: <
-  V extends Record<string, unknown>,
-  R extends Record<string, unknown>
+  R = Record<string, unknown>,
+  V = Record<string, unknown> | undefined
 >(
   gqlQuery: DocumentNode
-) => (variables: V) => CustomResponse<R> = (gqlQuery) => (variables) => {
+) => (variables?: V) => CustomResponse<R> = (gqlQuery) => (variables) => {
   if (typeof cache.query === 'function') {
     return cache.query({
       query: gqlQuery,
@@ -70,11 +70,11 @@ export const getQuery: <
 };
 
 export const getMutation: <
-  V extends Record<string, unknown>,
-  R extends Record<string, unknown>
+  V = Record<string, unknown>,
+  R = Record<string, unknown>
 >(
   gqlQuery: DocumentNode
-) => (variables: V) => CustomResponse<R> = (gqlMutation) => (variables) => {
+) => (variables?: V) => CustomResponse<R> = (gqlMutation) => (variables) => {
   if (typeof cache.mutate === 'function') {
     return cache.mutate({
       mutation: gqlMutation,

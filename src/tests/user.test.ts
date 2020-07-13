@@ -18,7 +18,7 @@ beforeAll(initTestClient);
 afterAll(killPrisma);
 
 describe('user', () => {
-  const userQuery = getQuery<{ id: ID }, { user: User }>(gql`
+  const userQuery = getQuery<{ user: User }, { id: ID }>(gql`
     query($id: ID!) {
       user(id: $id) {
         nombre
@@ -63,8 +63,8 @@ describe('user', () => {
 
   describe('single user with ventas', () => {
     const userWithVentas = getQuery<
-      { id: ID; last?: number; offset?: number; limit?: number },
-      { user: User & { ventas: Venta[] } }
+      { user: User & { ventas: Venta[] } },
+      { id: ID; last?: number; offset?: number; limit?: number }
     >(gql`
       query($id: ID!, $last: Int, $offset: Int, $limit: Int) {
         user(id: $id) {
@@ -163,7 +163,7 @@ describe('user', () => {
   });
 
   describe('all users', () => {
-    const allUsers = getQuery<Record<string, unknown>, { users: User[] }>(gql`
+    const allUsers = getQuery<{ users: User[] }>(gql`
       query {
         users {
           nombre
@@ -172,7 +172,7 @@ describe('user', () => {
     `);
 
     test('all users', async () => {
-      const result = await allUsers({});
+      const result = await allUsers();
       expect(result.errors).toBeUndefined();
 
       expect(result.data.users.length).toBe(3);
